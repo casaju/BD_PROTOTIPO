@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import CandidatoForm, UsuarioForm, CaoGuiaForm
+from .forms import CandidatoForm, UsuarioForm, CaoGuiaForm, FormacaoDuplaForm
 
 def cadastrar_candidato(request):
     if request.method == 'POST':
@@ -9,7 +9,7 @@ def cadastrar_candidato(request):
             return redirect('cadastrar_candidato')
     else:
         form = CandidatoForm()
-    return render(request, 'cadastros/form.html', {'form': form})
+    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Cadastrar candidato'})
 
 def cadastrar_usuario(request):
     if request.method == 'POST':
@@ -19,7 +19,7 @@ def cadastrar_usuario(request):
             return redirect('cadastrar_usuario')
     else:
         form = UsuarioForm()
-    return render(request, 'cadastros/form.html', {'form': form})
+    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
 
 
 def cadastrar_caoguia(request):
@@ -30,4 +30,11 @@ def cadastrar_caoguia(request):
             return redirect('cadastrar_caoguia')
     else:
         form = CaoGuiaForm()
-    return render(request, 'cadastros/form.html', {'form': form})
+    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Cadastrar Cão-guia'})
+
+def cadastrar_formacao(request):
+    form = FormacaoDuplaForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('cadastrar_formacao')
+    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Formar Dupla'})

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Candidato, Usuario, CaoGuia
+from .models import Candidato, Usuario, CaoGuia, FormacaoDupla
 
 class CandidatoForm(forms.ModelForm):
     class Meta:
@@ -14,4 +14,9 @@ class UsuarioForm(forms.ModelForm):
 class CaoGuiaForm(forms.ModelForm):
     class Meta:
         model = CaoGuia
+        fields = '__all__'
+
+class FormacaoDuplaForm(forms.ModelForm):
+    class Meta:
+        model = FormacaoDupla
         fields = '__all__'

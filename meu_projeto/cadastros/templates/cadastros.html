@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cadastro de Candidato</title>
+    <title>{{ titulo }}</title>
 </head>
 <body>
-    <h1>Cadastrar Candidato</h1>
+    <h1>{{ titulo }}</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Cadastrar</button>
+        <button type="submit">Salvar</button>
     </form>
 </body>
 </html>
