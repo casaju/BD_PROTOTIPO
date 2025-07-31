@@ -16,10 +16,13 @@ def cadastrar_usuario(request):
         form = UsuarioForm(request.POST)
         if form.is_valid():
             form.save()
+            print("Dados salvos com sucesso!")
             return redirect('cadastrar_usuario')
+        else:
+            print("O formulário NÃO é válido. Erros:", form.errors)
     else:
-        form = UsuarioForm()
-    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
+        form= UsuarioForm
+    return render(request, 'cadastro.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
 
 
 def cadastrar_caoguia(request):
@@ -30,11 +33,11 @@ def cadastrar_caoguia(request):
             return redirect('cadastrar_caoguia')
     else:
         form = CaoGuiaForm()
-    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Cadastrar Cão-guia'})
+    return render(request, 'cadastro.html', {'form': form, 'titulo': 'Cadastrar Cão-guia'})
 
 def cadastrar_formacao(request):
     form = FormacaoDuplaForm(request.POST or None)
     if form.is_valid():
         form.save()
         return redirect('cadastrar_formacao')
-    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Formar Dupla'})
+    return render(request, 'cadastro.html', {'form': form, 'titulo': 'Formar Dupla'})

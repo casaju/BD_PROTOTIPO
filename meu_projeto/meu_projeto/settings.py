@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'meu_projeto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'caes_guias',
+        'NAME': 'cadastro_CG',
         'USER': 'postgres',
         'PASSWORD': 'ferju123',
         'HOST': 'localhost',

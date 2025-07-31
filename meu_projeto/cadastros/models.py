@@ -21,7 +21,7 @@ class CaoGuia(models.Model):
     tamanho = models.FloatField()
     inicio_treinamento = models.DateField()
     termino_treinamento = models.DateField()
-    total_horas_treinadas = models.TimeField()
+    total_horas_treinadas = models.IntegerField()
     treinador_responsavel = models.CharField(max_length=255)
 
     def __str__(self):
