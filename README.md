@@ -43,6 +43,12 @@ O sistema permite cadastrar, listar e gerenciar os dados de forma prática, inte
    python manage.py runserver
    ```
 
+   ## 📬 Contato
+
+Feito com 🐾 by Julia Casagrande  
+📧 [juliacambrosini@gmail.com](mailto:juliacambrosini@gmail.com)  
+🔗 [LinkedIn](https://www.linkedin.com/in/juliacasagrandeambrosini/)
+
 ---
 
 ## 🦮 Guide Dog User and Candidate Registration System
@@ -89,3 +95,8 @@ The system allows registering, listing, and managing data easily, integrating th
    python manage.py migrate
    python manage.py runserver
    ```
+   ## 📬 Contact
+
+Made with 🐾 by Julia Casagrande  
+📧 [juliacambrosini@gmail.com](mailto:juliacambrosini@gmail.com)  
+🔗 [LinkedIn](https://www.linkedin.com/in/juliacasagrandeambrosini/)
