@@ -9,7 +9,7 @@ def cadastrar_candidato(request):
             return redirect('cadastrar_candidato')
     else:
         form = CandidatoForm()
-    return render(request, 'cadastros/form.html', {'form': form, 'titulo': 'Cadastrar candidato'})
+    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar candidato'})
 
 def cadastrar_usuario(request):
     if request.method == 'POST':
@@ -22,7 +22,7 @@ def cadastrar_usuario(request):
             print("O formulário NÃO é válido. Erros:", form.errors)
     else:
         form= UsuarioForm
-    return render(request, 'cadastro.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
+    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
 
 
 def cadastrar_caoguia(request):
@@ -33,11 +33,17 @@ def cadastrar_caoguia(request):
             return redirect('cadastrar_caoguia')
     else:
         form = CaoGuiaForm()
-    return render(request, 'cadastro.html', {'form': form, 'titulo': 'Cadastrar Cão-guia'})
+    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar Cão-guia'})
 
 def cadastrar_formacao(request):
     form = FormacaoDuplaForm(request.POST or None)
     if form.is_valid():
         form.save()
         return redirect('cadastrar_formacao')
-    return render(request, 'cadastro.html', {'form': form, 'titulo': 'Formar Dupla'})
+    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Formar Dupla'})
+
+def cadastro_inicio(request):
+    return render(request, 'cadastros/botao.html')
+
+def home(request):
+    return render(request, 'cadastros/home.html')

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ titulo }}</title>
+</head>
+<body>
+    <h1>{{ titulo }}</h1>
+    <h1>{{ olá_usuario }}</h1>
+    
+    <hr>
+    
+    <h2>Selecione uma opção de cadastro:</h2>
+    
+    <a href="{% url 'cadastrar_candidato' %}">
+        <button>Cadastro de Candidato</button>
+    </a>
+    
+    <a href="{% url 'cadastrar_caoguia' %}">
+        <button>Cadastro de Cão-Guia</button>
+    </a>
+
+    <a href="{% url 'cadastrar_usuario' %}">
+        <button>Cadastro de Usuario</button>
+    </a>
+
+
+
+</body>
+</html>

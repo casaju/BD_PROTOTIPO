@@ -1,7 +1,7 @@
 from django.db import models
 
 class Usuario(models.Model):
-    id_usuario = models.IntegerField(primary_key=True)
+    id_usuario = models.AutoField(primary_key=True, unique=True)
     nome_usuario = models.CharField(max_length=255)
     email = models.EmailField()
     senha = models.CharField(max_length=255)
@@ -12,7 +12,7 @@ class Usuario(models.Model):
 
 
 class CaoGuia(models.Model):
-    id_cao = models.IntegerField(primary_key=True)
+    id_cao = models.AutoField(primary_key=True, unique=True)
     nome_cao = models.CharField(max_length=255)
     raca = models.CharField(max_length=100)
     sexo = models.CharField(max_length=10)
@@ -33,7 +33,7 @@ class Candidato(models.Model):
         APTO = 'Apto', 'Apto'
         INAPTO = 'Inapto', 'Inapto'
 
-    id_usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
+    id_candidato = models.AutoField(primary_key=True, unique=True)
     nome_candidato = models.CharField(max_length=255)
     nascimento_candidato = models.DateField()
     altura = models.FloatField()
@@ -47,7 +47,7 @@ class Candidato(models.Model):
 
 
 class FormacaoDupla(models.Model):
-    id_cao = models.ForeignKey(CaoGuia, null=True, on_delete=models.SET_NULL)
-    id_usuario = models.ForeignKey(Candidato, null=True, on_delete=models.SET_NULL)
+    cao = models.ForeignKey(CaoGuia, null=True, on_delete=models.SET_NULL)
+    usuario = models.ForeignKey(Candidato, null=True, on_delete=models.SET_NULL)
     data_inicio = models.DateField()
-    data_fim = models.DateField()
+    data_fim = models.DateField(blank=True, null=True)
