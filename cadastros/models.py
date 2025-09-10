@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 class Usuario(models.Model):
     id_usuario = models.AutoField(primary_key=True, unique=True)
     nome_usuario = models.CharField(max_length=255)
-    email = models.EmailField()
-    senha = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     tipo = models.CharField(max_length=50)
 
     def __str__(self):

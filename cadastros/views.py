@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import CandidatoForm, UsuarioForm, CaoGuiaForm, FormacaoDuplaForm,  LoginForm
+from .forms import CandidatoForm, UsuarioForm, CaoGuiaForm, FormacaoDuplaForm, LoginForm
 from .models import Usuario
 from django.contrib.auth.forms import UserCreationForm
 
@@ -16,17 +16,24 @@ def cadastrar_candidato(request):
 
 def cadastrar_usuario(request): 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UsuarioForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            # Crie seu modelo de usuário vinculado ao user do Django
-            Usuario.objects.create(nome_usuario=user.username, user=user)
+            user = form.save(commit=False)
+            user.email = form.cleaned_data['email']
+            user.save()
+            
+            Usuario.objects.create(
+                nome_usuario=form.cleaned_data['nome_usuario'],
+                user=user,
+                tipo=form.cleaned_data['tipo']
+            )
+            
             print("Dados salvos com sucesso!")
             return redirect('cadastrar_usuario')
         else:
             print("O formulário NÃO é válido. Erros:", form.errors)
     else:
-        form= UserCreationForm
+        form = UsuarioForm()
     return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
 
 
