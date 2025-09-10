@@ -1,10 +1,10 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 class Usuario(models.Model):
     id_usuario = models.AutoField(primary_key=True, unique=True)
     nome_usuario = models.CharField(max_length=255)
     email = models.EmailField()
-    senha = models.CharField(max_length=255)
+    senha = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     tipo = models.CharField(max_length=50)
 
     def __str__(self):
@@ -12,7 +12,7 @@ class Usuario(models.Model):
 
 
 class CaoGuia(models.Model):
-    id_cao = models.AutoField(primary_key=True, unique=True)
+    id_cao = models.CharField(primary_key=True, unique=True, max_length=36)
     nome_cao = models.CharField(max_length=255)
     raca = models.CharField(max_length=100)
     sexo = models.CharField(max_length=10)
@@ -33,7 +33,7 @@ class Candidato(models.Model):
         APTO = 'Apto', 'Apto'
         INAPTO = 'Inapto', 'Inapto'
 
-    id_candidato = models.AutoField(primary_key=True, unique=True)
+    id_candidato = models.CharField(primary_key=True, unique=True, max_length=36)
     nome_candidato = models.CharField(max_length=255)
     nascimento_candidato = models.DateField()
     altura = models.FloatField()

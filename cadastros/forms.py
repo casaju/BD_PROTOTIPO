@@ -20,3 +20,7 @@ class FormacaoDuplaForm(forms.ModelForm):
     class Meta:
         model = FormacaoDupla
         fields = '__all__'
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(label='Email')
+    senha = forms.CharField(label='Senha', widget=forms.PasswordInput)

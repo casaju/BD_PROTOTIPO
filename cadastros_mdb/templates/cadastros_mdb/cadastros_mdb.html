@@ -5,10 +5,26 @@
 </head>
 <body>
     <h1>{{ titulo }}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Salvar</button>
-    </form>
+    {% if form %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Salvar</button>
+        </form>
+    {% endif %}
+
+    {% if caes_cadastrados %}
+        <h2>Cães-Guia Cadastrados:</h2>
+        <ul>
+            {% for cao in caes_cadastrados %}
+                <li>Nome: {{ cao.nome_cao }} - Raça: {{ cao.raca }} - ID: {{ cao.id_cao }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if text %}
+        <p>{{ text }}</p>
+    {% endif %}
 </body>
+</html>
 </html>

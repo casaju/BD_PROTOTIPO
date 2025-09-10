@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import testeForm
+from cadastros.models import CaoGuia
 
 def informacoes_candidato(request):
     if request.method == 'POST':
@@ -14,8 +15,10 @@ def informacoes_candidato(request):
 
 
 def informacoes_caoguia(request):
+    caes_cadastrados = CaoGuia.objects.all() # Busca todos os cães cadastrados
     contexto = {
-        'text': 'Olá 😊, Você está na página de informações do Cao Guia.'
+        'caes_cadastrados': caes_cadastrados,
+        'titulo': 'Informações de Cão-Guia',
     }
     return render(request, 'cadastros_mdb/cadastros_mdb.html', contexto)
 
