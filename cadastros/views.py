@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import UsuarioForm,CandidatoForm, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm
-from .models import Usuario
-from django.contrib.auth.forms import UserCreationForm
+from .forms import LoginForm
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 def cadastrar_candidato(request):
@@ -77,16 +77,22 @@ def login_view(request):
         if form.is_valid():
             email = form.cleaned_data.get('email')
             senha = form.cleaned_data.get('senha')
-            
-            # Autentica o usuário usando o email e a senha
-            user = authenticate(request, username=email, password=senha)
+
+            # Tenta encontrar o usuário pelo email
+            try:
+                user_obj = User.objects.get(email=email)
+                username = user_obj.username
+            except User.DoesNotExist:
+                user_obj = None
+                username = None
+
+            # Autentica o usuário usando o username e a senha
+            user = authenticate(request, username=username, password=senha)
             
             if user is not None:
-                # Se o usuário for válido, faz o login e redireciona
                 login(request, user)
                 return redirect('home')
             else:
-                # Se a autenticação falhar, adiciona um erro ao formulário
                 form.add_error(None, "Email ou senha incorretos.")
     else:
         form = LoginForm()
