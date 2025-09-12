@@ -3,22 +3,26 @@ from .models import Candidato, Usuario, CaoGuia, FormacaoDupla
 from django.contrib.auth.forms import UserCreationForm
 
 
-class CandidatoForm(forms.ModelForm):
-    nome_usuario = forms.CharField(max_length=255, label='Nome Completo')
-    email = forms.EmailField(label='Email')
-    tipo = forms.CharField(max_length=50, label='Tipo de Usuário')
-
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, help_text='Obrigatório. Digite um email válido.')
     class Meta(UserCreationForm.Meta):
-        fields = UserCreationForm.Meta.fields + ('email', 'nome_usuario', 'tipo')
+        # A senha é automaticamente tratada pelo UserCreationForm
+        fields = ('username', 'email')
 
 class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
-        fields = '__all__'
+        # Exibe apenas os campos nome_usuario e tipo no formulário
+        fields = ('nome_usuario', 'tipo')
 
 class CaoGuiaForm(forms.ModelForm):
     class Meta:
         model = CaoGuia
+        fields = '__all__'
+
+class CandidatoForm(forms.ModelForm):
+    class Meta:
+        model = Candidato
         fields = '__all__'
 
 class FormacaoDuplaForm(forms.ModelForm):

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from .forms import CandidatoForm, UsuarioForm, CaoGuiaForm, FormacaoDuplaForm, LoginForm
+from .forms import UsuarioForm,CandidatoForm, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm
 from .models import Usuario
 from django.contrib.auth.forms import UserCreationForm
-
+from django.contrib.auth import authenticate, login
 
 def cadastrar_candidato(request):
     if request.method == 'POST':
@@ -16,26 +16,35 @@ def cadastrar_candidato(request):
 
 def cadastrar_usuario(request): 
     if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.email = form.cleaned_data['email']
+        user_form = CustomUserCreationForm(request.POST)
+        usuario_form = UsuarioForm(request.POST)
+
+        if user_form.is_valid() and usuario_form.is_valid():
+            # Salva o novo usuário do Django auth
+            user = user_form.save(commit=False)
+            user.email = user_form.cleaned_data.get('email')
             user.save()
-            
-            Usuario.objects.create(
-                nome_usuario=form.cleaned_data['nome_usuario'],
-                user=user,
-                tipo=form.cleaned_data['tipo']
-            )
+
+            # Salva o modelo Usuario, linkando-o ao novo usuário
+            usuario = usuario_form.save(commit=False)
+            usuario.user = user
+            usuario.save()
             
             print("Dados salvos com sucesso!")
             return redirect('cadastrar_usuario')
         else:
-            print("O formulário NÃO é válido. Erros:", form.errors)
+            print("O formulário NÃO é válido. Erros no formulário de usuário:", user_form.errors)
+            print("O formulário NÃO é válido. Erros no formulário de dados adicionais:", usuario_form.errors)
     else:
-        form = UsuarioForm()
-    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar Usuario'})
+        user_form = CustomUserCreationForm()
+        usuario_form = UsuarioForm()
 
+    context = {
+        'user_form': user_form,
+        'usuario_form': usuario_form,
+        'titulo': 'Cadastrar Usuario'
+    }
+    return render(request, 'cadastros/cadastro.html', context)
 
 
 def cadastrar_caoguia(request):
@@ -69,12 +78,15 @@ def login_view(request):
             email = form.cleaned_data.get('email')
             senha = form.cleaned_data.get('senha')
             
-            try:
-                usuario = Usuario.objects.get(email=email, senha=senha)
-                # Se o usuário e a senha correspondem, redirecione para a página inicial
+            # Autentica o usuário usando o email e a senha
+            user = authenticate(request, username=email, password=senha)
+            
+            if user is not None:
+                # Se o usuário for válido, faz o login e redireciona
+                login(request, user)
                 return redirect('home')
-            except Usuario.DoesNotExist:
-                # Se o usuário não existe ou a senha está incorreta, adicione um erro ao formulário
+            else:
+                # Se a autenticação falhar, adiciona um erro ao formulário
                 form.add_error(None, "Email ou senha incorretos.")
     else:
         form = LoginForm()
