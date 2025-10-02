@@ -44,7 +44,7 @@ def cadastrar_usuario(request):
         'usuario_form': usuario_form,
         'titulo': 'Cadastrar Usuario'
     }
-    return render(request, 'cadastros/cadastro.html', context)
+    return render(request, 'cadastros/cadastrosuser.html', context)
 
 
 def cadastrar_caoguia(request):

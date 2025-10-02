@@ -51,3 +51,5 @@ class FormacaoDupla(models.Model):
     usuario = models.ForeignKey(Candidato, null=True, on_delete=models.SET_NULL)
     data_inicio = models.DateField()
     data_fim = models.DateField(blank=True, null=True)
+
+

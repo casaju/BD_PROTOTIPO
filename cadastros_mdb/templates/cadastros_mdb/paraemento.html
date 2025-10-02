@@ -1,0 +1,11 @@
+<h1>Resultados de Pareamento para {{ candidato.nome }}</h1>
+
+<p>Aqui estão os cães mais compatíveis, em ordem de pontuação:</p>
+
+<ul>
+    {% for par in pares %}
+        <li>
+            <strong>{{ forloop.counter }}. Cão: {{ par.nome_cao }}</strong> - Pontuação: {{ par.pontuacao }}
+        </li>
+    {% endfor %}
+</ul>
