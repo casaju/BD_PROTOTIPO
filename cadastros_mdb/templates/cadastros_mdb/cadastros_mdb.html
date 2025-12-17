@@ -1,3 +1,5 @@
+HTML
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,18 +15,21 @@
         </form>
     {% endif %}
 
-    {% if caes_cadastrados %}
-        <h2>Cães-Guia Cadastrados:</h2>
-        <ul>
-            {% for cao in caes_cadastrados %}
-                <li>Nome: {{ cao.nome_cao }} - Raça: {{ cao.raca }} - ID: {{ cao.id_cao }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
+    <h2>Cães-Guia Cadastrados:</h2>
+    <ul>
+        {% for cao in caes_cadastrados_mdb %}
+            <li>
+                ID do Cão: {{ cao.id_cao }} -
+                Velocidade: {{ cao.velocidade_caminhada }} -
+                Altura: {{ cao.altura }} -
+                Peso: {{ cao.peso }} -
+                Sexo: {{ cao.sexo }}
+            </li>
+        {% endfor %}
+    </ul>
+    
     {% if text %}
         <p>{{ text }}</p>
     {% endif %}
 </body>
-</html>
 </html>

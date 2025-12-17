@@ -1,28 +1,61 @@
 # pareamento/views.py
 
 from django.shortcuts import render, redirect
+from .forms import CandidatoinformacoesForm, CaoinformacoesForm 
 from .models import Candidatoinformacoes, Caoinformacoes
+from cadastros.models import CaoGuia
 import math
 
 def informacoes_candidato(request):
     if request.method == 'POST':
-        form = Candidatoinformacoes(request.POST)
+        form = CandidatoinformacoesForm(request.POST) # Use a classe de formulário
         if form.is_valid():
             form.save()
             return redirect('informacoes_candidato')
     else:
-        form = Candidatoinformacoes()
-    return render(request, 'cadastros_mdb/cadastros_mdb.html', {'form': form, 'titulo': 'Informações do candidato'})
+        form = CandidatoinformacoesForm() # Use a classe de formulário
+    
+    candidatos_cadastrados = Candidatoinformacoes.objects.all()
+    context = {
+        'form': form,
+        'titulo': 'Informações do Candidato',
+        'candidatos_cadastrados': candidatos_cadastrados
+    }
+    return render(request, 'cadastros_mdb/cadastros_mdb.html', context)
+
 
 def informacoes_caoguia(request):
+    caes_cadastrados_mdb = Caoinformacoes.objects.all()
+
     if request.method == 'POST':
-        form = Caoinformacoes(request.POST)
+        form = CaoinformacoesForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Obtém o objeto CaoGuia selecionado do formulário
+            cao_selecionado = form.cleaned_data['cao']
+            
+            # Cria a instância de Caoinformacoes, mas não salva ainda
+            nova_info_cao = form.save(commit=False)
+            
+            # Atribui o ID, altura, peso e sexo do objeto relacional
+            nova_info_cao.id_cao = cao_selecionado.id_cao
+            nova_info_cao.altura = cao_selecionado.tamanho
+            nova_info_cao.peso = cao_selecionado.peso_cao
+            nova_info_cao.sexo = cao_selecionado.sexo
+            
+            # Salva a nova instância no MongoDB
+            nova_info_cao.save()
+
             return redirect('informacoes_caoguia')
     else:
-        form = Caoinformacoes()
-    return render(request, 'cadastros_mdb/cadastros_mdb.html', {'form': form, 'titulo': 'Informações do Cão-guia'})
+        form = CaoinformacoesForm()
+    
+    context = {
+        'form': form,
+        'titulo': 'Informações do Cão-Guia',
+        'caes_cadastrados_mdb': caes_cadastrados_mdb,
+    }
+    return render(request, 'cadastros_mdb/cadastros_mdb.html', context)
+
 
 def informacoes_cadastro(request):
     return render(request, 'cadastros_mdb/botoes.html', {'titulo': 'Informações de Cão-Guia e Candidato'})

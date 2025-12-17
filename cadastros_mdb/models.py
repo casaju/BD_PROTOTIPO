@@ -11,12 +11,13 @@ class Candidatoinformacoes(models.Model):
         return self.nome
 
 class Caoinformacoes(models.Model):
-    nome = models.CharField(max_length=200)
-    raca = models.CharField(max_length=100)
+    # Campo para vincular ao ID do CaoGuia do banco de dados relacional
+    id_cao = models.CharField(max_length=36, unique=True, null=True, blank=True)
+    
+    # Adicione os campos restantes para o MongoDB
     altura = models.FloatField()
     peso = models.FloatField()
-    velocidade_caminhada = models.CharField(max_length=50)
     sexo = models.CharField(max_length=50)
-
+    velocidade_caminhada = models.CharField(max_length=50)
     def __str__(self):
-        return self.nome
+        return f"Informações de {self.id_cao}"
