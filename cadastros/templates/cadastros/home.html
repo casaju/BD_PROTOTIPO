@@ -4,106 +4,145 @@
     <meta charset="UTF-8">
     <title>Página Inicial - Projeto Cão-Guia</title>
     <style>
-        /* Estilo simples para dividir a tela em 3 partes */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             margin: 0;
             padding: 20px;
+            background-color: #f9f9f9;
         }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+        }
+        
+        /* Container flexível para alinhar os cards */
         .container {
             display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin-top: 50px;
+            justify-content: center; /* Centraliza no meio da tela */
+            align-items: flex-start; /* Alinha o topo dos cards */
+            gap: 20px; /* Espaço entre os cards */
+            flex-wrap: wrap; /* Permite quebrar linha se a tela for pequena */
+            margin-top: 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
+
+        /* Estilo dos Cartões */
         .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            width: 30%;
-            min-width: 250px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            background-color: white;
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            padding: 25px;
+            width: 300px; /* Largura fixa para ficarem iguais */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px; /* Altura mínima para ficarem parecidos */
         }
+
+        .card:hover {
+            transform: translateY(-5px); /* Efeito sutil ao passar o mouse */
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+
         .card h2 {
-            color: #333;
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.4rem;
         }
+
+        /* Estilo dos Botões */
         button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
+            width: 100%; /* Botão ocupa a largura do card */
+            padding: 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin-top: 8px;
+            transition: background-color 0.2s;
         }
-        button:hover {
-            background-color: #45a049;
+
+        /* Cores específicas para cada tipo de botão */
+        .btn-verde { background-color: #4CAF50; }
+        .btn-verde:hover { background-color: #45a049; }
+
+        .btn-azul { background-color: #008CBA; }
+        .btn-azul:hover { background-color: #007bb5; }
+
+        .btn-laranja { background-color: #ff9800; }
+        .btn-laranja:hover { background-color: #e68900; }
+        
+        .btn-vermelho { background-color: #f44336; }
+        .btn-vermelho:hover { background-color: #da190b; }
+
+        .footer-link {
+            display: block;
+            margin-top: 50px;
+            color: #666;
+            text-decoration: none;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <h1>Bem-vindo ao Sistema Cão-Guia ideal 💚 </h1>
+    <h1>Bem-vindo ao Sistema Cão-Guia Ideal 💚</h1>
     <p>Selecione a área de cadastro desejada:</p>
     
     <div class="container">
         
         <div class="card">
-            <h2>Sistema</h2>
-            <p>Cadastro de usuários administrativos e funcionários.</p>
+            <div>
+                <h2>Sistema</h2>
+                <p>Cadastro de usuários administrativos e funcionários.</p>
+            </div>
             <a href="{% url 'cadastrar_usuario' %}">
-                <button>Cadastrar Usuário</button>
+                <button class="btn-verde">Cadastrar Usuário</button>
             </a>
         </div>
 
         <div class="card">
-            <h2>Cães-Guia</h2>
-            <p>Cadastro técnico dos cães em treinamento ou disponíveis.</p>
-            <a href="{% url 'cadastrar_caoguia' %}">
-                <button>Cadastrar Cão</button>
+            <div>
+                <h2>Cães-Guia</h2>
+                <p>Cadastro técnico e básico.</p>
+            </div>
+            <a href="{% url 'cadastro_cao_etapa1' %}">
+                <button class="btn-verde">Etapa 1: Novo Cão</button>
+            </a>
+            <a href="{% url 'verificar_id_cao_etapa2' %}">
+                <button class="btn-laranja">Etapa 2: Complementar</button>
             </a>
         </div>
 
         <div class="card">
-            <h2>Candidatos</h2>
-            <p>Pessoas com deficiência visual solicitando pareamento.</p>
+            <div>
+                <h2>Candidatos</h2>
+                <p>Gerenciamento de Candidatos e solicitação de pareamento.</p>
+            </div>
             <a href="{% url 'cadastro_etapa1' %}">
-                <button>Cadastrar Candidato</button>
+                <button class="btn-azul">Etapa 1: Novo Cadastro</button>
+            </a>
+            <a href="{% url 'verificar_cpf_etapa2' %}">
+                <button class="btn-vermelho">Etapa 2: Continuar Cadastro</button>
             </a>
         </div>
-        
-    <div class="card">
-    <h2>Candidatos</h2>
-    <p>Gerenciamento de Candidatos</p>
-    
-    <a href="{% url 'cadastro_etapa1' %}">
-        <button style="background-color: #008CBA; margin-bottom: 5px;">Etapa 1: Novo Cadastro</button>
-    </a>
-    <br>
-    <a href="{% url 'verificar_cpf_etapa2' %}">
-        <button style="background-color: #f44336;">Etapa 2: Continuar Cadastro</button>
-    </a>
-        </div>
 
-    <div class="card">
-    <h2>Cães-Guia</h2>
-    <p>Cadastro técnico e básico.</p>
-    
-    <a href="{% url 'cadastro_cao_etapa1' %}">
-        <button style="background-color: #4CAF50; margin-bottom: 5px;">Etapa 1: Novo Cão</button>
-    </a>
-    <br>
-    <a href="{% url 'verificar_id_cao_etapa2' %}">
-        <button style="background-color: #FF9800;">Etapa 2: Complementar</button>
-    </a>
-        </div>
     </div>
 
-    <br>
-    <hr>
-    <p><a href="{% url 'login' %}">Sair / Voltar ao Login</a></p>
+    <hr style="margin-top: 50px; border: 0; border-top: 1px solid #eee;">
+    <a href="{% url 'login' %}" class="footer-link">Sair / Voltar ao Login</a>
 
 </body>
 </html>

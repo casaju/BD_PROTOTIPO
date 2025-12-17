@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import cadastro_etapa1, cadastro_cao_etapa1, verificar_id_cao_etapa2, cadastro_cao_etapa2, cadastrar_usuario, cadastrar_formacao, cadastro_etapa2, cadastro_inicio, home, login_view, verificar_cpf_etapa2
+from .views import cadastro_etapa1, cadastro_cao_etapa1, verificar_id_cao_etapa2, cadastro_cao_etapa2, cadastrar_usuario, cadastrar_formacao, cadastro_etapa2, home, login_view, verificar_cpf_etapa2
 
 urlpatterns = [
 # urls de usuário e formacao 

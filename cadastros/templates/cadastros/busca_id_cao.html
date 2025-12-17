@@ -1,12 +1,107 @@
 <!DOCTYPE html>
-<html>
-<head><title>{{ titulo }}</title></head>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5; /* Fundo levemente diferente */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+        /* Inputs estilizados */
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        label {
+            display: none; /* Oculta labels para visual mais limpo (opcional) */
+        }
+        /* Botão Azul */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #008CBA; /* Azul */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #007bb5;
+        }
+        .link-voltar {
+            display: block;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .link-voltar:hover {
+            text-decoration: underline;
+        }
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
 <body>
-    <h1>{{ titulo }}</h1>
-    {% if messages %}
-        <ul>{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
-    {% endif %}
-    <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Buscar</button></form>
-    <br><a href="{% url 'home' %}">Voltar</a>
+
+    <div class="container">
+        <h1>{{ titulo }}</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+             <div class="alert-error">Verifique os dados informados.</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">
+                {% if 'Login' in titulo %} Entrar {% else %} Buscar {% endif %}
+            </button>
+        </form>
+
+        <a href="{% url 'home' %}" class="link-voltar">Cancelar / Voltar</a>
+    </div>
+
 </body>
 </html>

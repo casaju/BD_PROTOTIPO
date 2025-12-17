@@ -1,13 +1,130 @@
 <!DOCTYPE html>
-<html>
-<head><title>{{ titulo }}</title></head>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px; /* Largura máxima do formulário */
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        /* Estilo dos campos do Django (labels e inputs) */
+        p {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="email"], input[type="number"], 
+        input[type="date"], input[type="password"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Garante que o padding não aumente a largura */
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        /* Botão de Salvar */
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        /* Link de Voltar */
+        .voltar {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .voltar:hover {
+            color: #333;
+            text-decoration: underline;
+        }
+        /* Mensagens de erro/sucesso */
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .messages li {
+            color: #d9534f;
+            background-color: #f2dede;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ebccd1;
+        }
+    </style>
+</head>
 <body>
-    <h1>Etapa 2: Compatibilidade Cão-Guia</h1>
-    <p>Seus dados básicos já foram salvos. Por favor, complete o perfil.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Finalizar Cadastro</button>
-    </form>
+
+    <div class="card">
+        <h1>{{ titulo }}</h1>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if user_form %}
+                {{ user_form.as_p }}
+                {{ usuario_form.as_p }}
+            {% else %}
+                {{ form.as_p }}
+            {% endif %}
+            
+            <button type="submit">Salvar e Continuar</button>
+        </form>
+
+        <a href="{% url 'home' %}" class="voltar">← Voltar para a Home</a>
+    </div>
+
 </body>
 </html>
