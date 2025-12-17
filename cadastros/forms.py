@@ -30,20 +30,25 @@ class CaoGuiaForm(forms.ModelForm):
         model = CaoGuia
         fields = '__all__'
 
-#formulário da Etapa 1 do candidato
+#formulário da Etapa 1
 class CandidatoEtapa1Form(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = ['nome_candidato', 'nascimento_candidato', 'sexo', 'cidade']
+        fields = ['id_candidato', 'nome_candidato', 'nascimento_candidato', 'sexo', 'cidade']
+        labels = {'id_candidato': 'CPF'}
         widgets = {
             'nascimento_candidato': forms.DateInput(attrs={'type': 'date'}),
         }
 
-# Formulário da Etapa 2 do candidato
+# Formulário Etapa 2: Dados complementares
 class CandidatoEtapa2Form(forms.ModelForm):
     class Meta:
         model = Candidato
         fields = ['peso_candidato', 'altura', 'religiao', 'velocidade_caminhada', 'sexo_desejado_cao']
+
+# Novo Formulário: Apenas para verificar o CPF antes de entrar na Etapa 2
+class BuscaCPFForm(forms.Form):
+    cpf = forms.CharField(label='Digite o CPF do Candidato', max_length=14)
 
 class FormacaoDuplaForm(forms.ModelForm):
     class Meta:

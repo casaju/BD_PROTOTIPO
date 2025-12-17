@@ -1,52 +1,61 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UsuarioForm,CandidatoEtapa1Form, CandidatoEtapa2Form, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm
+from .forms import UsuarioForm,CandidatoEtapa1Form, CandidatoEtapa2Form, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm, BuscaCPFForm
 from .forms import LoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .forms import CandidatoEtapa1Form, CandidatoEtapa2Form
 from .models import Candidato
+from django.contrib import messages
 
 def cadastro_etapa1(request):
     if request.method == 'POST':
         form = CandidatoEtapa1Form(request.POST)
         if form.is_valid():
-            # Salva a primeira parte
-            candidato = form.save()
-            
-            # Armazena o ID do candidato na sessão para usar na etapa 2
-            request.session['candidato_id'] = str(candidato.id_candidato)
-            
-            # Redireciona para a etapa 2
-            return redirect('cadastro_etapa2')
+            form.save()
+            messages.success(request, 'Etapa 1 concluída! Você pode continuar agora ou depois.')
+            return redirect('home') # Volta para home para o usuário escolher o que fazer
     else:
         form = CandidatoEtapa1Form()
     
-    return render(request, 'cadastros/cadastro_etapa1.html', {'form': form, 'titulo': 'Cadastro Inicial'})
+    return render(request, 'cadastros/cadastro_etapa1.html', {'form': form, 'titulo': 'Etapa 1: Dados Pessoais'})
 
-def cadastro_etapa2(request):
-    # Tenta pegar o ID salvo na sessão
-    candidato_id = request.session.get('candidato_id')
+# --- Nova View: Verifica CPF antes da Etapa 2 ---
+def verificar_cpf_etapa2(request):
+    if request.method == 'POST':
+        form = BuscaCPFForm(request.POST)
+        if form.is_valid():
+            cpf = form.cleaned_data['cpf']
+            # Verifica se existe no banco
+            if Candidato.objects.filter(pk=cpf).exists():
+                # Se existe, vai para a etapa 2 passando o CPF na URL
+                return redirect('cadastro_etapa2', cpf=cpf)
+            else:
+                messages.error(request, 'CPF não encontrado! Realize a Etapa 1 primeiro.')
+    else:
+        form = BuscaCPFForm()
     
-    if not candidato_id:
-        # Se não tiver ID, volta para o início (segurança)
-        return redirect('cadastro_etapa1')
-        
-    # Busca o candidato no banco de dados
-    candidato = get_object_or_404(Candidato, pk=candidato_id)
+    return render(request, 'cadastros/busca_cpf.html', {'form': form, 'titulo': 'Acessar Etapa 2'})
+
+# --- View da Etapa 2 ---
+def cadastro_etapa2(request, cpf):
+    # Busca o candidato pelo CPF passado na URL ou dá erro 404
+    candidato = get_object_or_404(Candidato, pk=cpf)
     
     if request.method == 'POST':
-        # Carrega o formulário com a instância do candidato existente para ATUALIZAR
         form = CandidatoEtapa2Form(request.POST, instance=candidato)
         if form.is_valid():
             form.save()
-            
-            # Limpa a sessão e redireciona para o sucesso ou home
-            del request.session['candidato_id']
-            return redirect('home') # Ou uma página de sucesso
+            messages.success(request, 'Cadastro completo realizado com sucesso!')
+            return redirect('home')
     else:
         form = CandidatoEtapa2Form(instance=candidato)
         
-    return render(request, 'cadastros/cadastro_etapa2.html', {'form': form, 'titulo': 'Cadastro Complementar'})
+    return render(request, 'cadastros/cadastro_etapa2.html', {
+        'form': form, 
+        'titulo': f'Etapa 2: Completar perfil de {candidato.nome_candidato}'
+    })
+
+
 def cadastrar_usuario(request): 
     if request.method == 'POST':
         user_form = CustomUserCreationForm(request.POST)

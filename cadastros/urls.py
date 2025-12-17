@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import cadastro_etapa1, cadastrar_caoguia, cadastrar_usuario, cadastrar_formacao, cadastro_etapa2, cadastro_inicio, home, login_view
+from .views import cadastro_etapa1, cadastrar_caoguia, cadastrar_usuario, cadastrar_formacao, cadastro_etapa2, cadastro_inicio, home, login_view, verificar_cpf_etapa2
 
 urlpatterns = [
     path('usuarios/cadastrar/', cadastrar_usuario, name='cadastrar_usuario'),
@@ -9,7 +9,8 @@ urlpatterns = [
     path('home/', home, name='home'),
     path('', login_view, name='login'),
     path('candidato/novo/', cadastro_etapa1, name='cadastro_etapa1'),
-    path('candidato/complemento/', cadastro_etapa2, name='cadastro_etapa2'),
+    path('candidato/buscar/', verificar_cpf_etapa2, name='verificar_cpf_etapa2'),
+    path('candidato/etapa2/<str:cpf>/', cadastro_etapa2, name='cadastro_etapa2'),
 ]
 
 

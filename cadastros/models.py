@@ -30,52 +30,43 @@ class CaoGuia(models.Model):
 
 
 class Candidato(models.Model):
-    # Opções (Choices)
-    SEXO_CHOICES = [
-        ('M', 'Masculino'),
-        ('F', 'Feminino'),
-    ]
+    # Opções
+    SEXO_CHOICES = [('M', 'Masculino'), ('F', 'Feminino')]
+    VELOCIDADE_CHOICES = [('baixa', 'Baixa'), ('moderada', 'Moderada'), ('alta', 'Alta')]
+    PREFERENCIA_SEXO_CAO = [('M', 'Macho'), ('F', 'Fêmea'), ('indiferente', 'Indiferente')]
     
-    VELOCIDADE_CHOICES = [
-        ('baixa', 'Baixa'),
-        ('moderada', 'Moderada'),
-        ('alta', 'Alta'),
-    ]
-    
-    PREFERENCIA_SEXO_CAO = [
-        ('M', 'Macho'),
-        ('F', 'Fêmea'),
-        ('indiferente', 'Indiferente'),
-    ]
-
     class Considerado(models.TextChoices):
         APTO = 'Apto', 'Apto'
         INAPTO = 'Inapto', 'Inapto'
 
-    # --- IDENTIFICADOR (Chave Primária) ---
-    # Esta linha é crucial. Ela impede que o Django tente criar o campo 'id' automático.
-    id_candidato = models.CharField(primary_key=True, unique=True, max_length=36, default=uuid.uuid4, editable=False)
+    # --- IDENTIFICADOR AGORA É O CPF ---
+    # Removemos o default=uuid e o editable=False, pois o usuário vai digitar
+    id_candidato = models.CharField(
+        primary_key=True, 
+        max_length=14, 
+        verbose_name="CPF", 
+        help_text="Digite o CPF (apenas números ou com pontuação)"
+    )
 
-    # --- ETAPA 1 (Dados Pessoais) ---
+    # --- ETAPA 1 ---
     nome_candidato = models.CharField(max_length=255)
     nascimento_candidato = models.DateField()
     sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, null=True, blank=True)
     cidade = models.CharField(max_length=100, null=True, blank=True)
     
-    # --- ETAPA 2 (Dados Técnicos e Preferências) ---
+    # --- ETAPA 2 ---
     altura = models.FloatField(null=True, blank=True)
     peso_candidato = models.FloatField(null=True, blank=True)
     religiao = models.CharField(max_length=100, null=True, blank=True)
     velocidade_caminhada = models.CharField(max_length=20, choices=VELOCIDADE_CHOICES, null=True, blank=True)
     sexo_desejado_cao = models.CharField(max_length=20, choices=PREFERENCIA_SEXO_CAO, null=True, blank=True)
     
-    # Outros Campos
+    # Outros
     estado_civil = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=10, choices=Considerado.choices, default=Considerado.APTO)
 
     def __str__(self):
-        return self.nome_candidato
-
+        return f"{self.nome_candidato} ({self.id_candidato})"
 
 class FormacaoDupla(models.Model):
     
