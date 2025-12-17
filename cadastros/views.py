@@ -1,19 +1,52 @@
-from django.shortcuts import render, redirect
-from .forms import UsuarioForm,CandidatoForm, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import UsuarioForm,CandidatoEtapa1Form, CandidatoEtapa2Form, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm
 from .forms import LoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from .forms import CandidatoEtapa1Form, CandidatoEtapa2Form
+from .models import Candidato
 
-def cadastrar_candidato(request):
+def cadastro_etapa1(request):
     if request.method == 'POST':
-        form = CandidatoForm(request.POST)
+        form = CandidatoEtapa1Form(request.POST)
+        if form.is_valid():
+            # Salva a primeira parte
+            candidato = form.save()
+            
+            # Armazena o ID do candidato na sessão para usar na etapa 2
+            request.session['candidato_id'] = str(candidato.id_candidato)
+            
+            # Redireciona para a etapa 2
+            return redirect('cadastro_etapa2')
+    else:
+        form = CandidatoEtapa1Form()
+    
+    return render(request, 'cadastros/cadastro_etapa1.html', {'form': form, 'titulo': 'Cadastro Inicial'})
+
+def cadastro_etapa2(request):
+    # Tenta pegar o ID salvo na sessão
+    candidato_id = request.session.get('candidato_id')
+    
+    if not candidato_id:
+        # Se não tiver ID, volta para o início (segurança)
+        return redirect('cadastro_etapa1')
+        
+    # Busca o candidato no banco de dados
+    candidato = get_object_or_404(Candidato, pk=candidato_id)
+    
+    if request.method == 'POST':
+        # Carrega o formulário com a instância do candidato existente para ATUALIZAR
+        form = CandidatoEtapa2Form(request.POST, instance=candidato)
         if form.is_valid():
             form.save()
-            return redirect('cadastrar_candidato')
+            
+            # Limpa a sessão e redireciona para o sucesso ou home
+            del request.session['candidato_id']
+            return redirect('home') # Ou uma página de sucesso
     else:
-        form = CandidatoForm()
-    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar candidato'})
-
+        form = CandidatoEtapa2Form(instance=candidato)
+        
+    return render(request, 'cadastros/cadastro_etapa2.html', {'form': form, 'titulo': 'Cadastro Complementar'})
 def cadastrar_usuario(request): 
     if request.method == 'POST':
         user_form = CustomUserCreationForm(request.POST)

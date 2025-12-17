@@ -30,10 +30,20 @@ class CaoGuiaForm(forms.ModelForm):
         model = CaoGuia
         fields = '__all__'
 
-class CandidatoForm(forms.ModelForm):
+#formulário da Etapa 1 do candidato
+class CandidatoEtapa1Form(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = '__all__'
+        fields = ['nome_candidato', 'nascimento_candidato', 'sexo', 'cidade']
+        widgets = {
+            'nascimento_candidato': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+# Formulário da Etapa 2 do candidato
+class CandidatoEtapa2Form(forms.ModelForm):
+    class Meta:
+        model = Candidato
+        fields = ['peso_candidato', 'altura', 'religiao', 'velocidade_caminhada', 'sexo_desejado_cao']
 
 class FormacaoDuplaForm(forms.ModelForm):
     class Meta:

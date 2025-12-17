@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>{{ titulo }}</title></head>
+<body>
+    <h1>Etapa 2: Compatibilidade Cão-Guia</h1>
+    <p>Seus dados básicos já foram salvos. Por favor, complete o perfil.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Finalizar Cadastro</button>
+    </form>
+</body>
+</html>
