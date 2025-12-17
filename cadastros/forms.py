@@ -25,10 +25,31 @@ class UsuarioForm(forms.ModelForm):
             'tipo': 'Tipo de Usuário',
         }
 
-class CaoGuiaForm(forms.ModelForm):
+class CaoGuiaEtapa1Form(forms.ModelForm):
     class Meta:
         model = CaoGuia
-        fields = '__all__'
+        fields = ['id_cao', 'nome_cao', 'raca', 'sexo', 'nascimento_cao']
+        widgets = {
+            'nascimento_cao': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+# 2. Busca ID (Para entrar na etapa 2)
+class BuscaCaoForm(forms.Form):
+    id_cao = forms.CharField(label='ID do Cão / Microchip', max_length=36)
+
+# 3. Etapa 2: Dados Complementares
+class CaoGuiaEtapa2Form(forms.ModelForm):
+    class Meta:
+        model = CaoGuia
+        fields = [
+            'peso_cao', 'tamanho', 'velocidade_caminhada',
+            'inicio_treinamento', 'termino_treinamento', 
+            'total_horas_treinadas', 'treinador_responsavel'
+        ]
+        widgets = {
+            'inicio_treinamento': forms.DateInput(attrs={'type': 'date'}),
+            'termino_treinamento': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 #formulário da Etapa 1
 class CandidatoEtapa1Form(forms.ModelForm):

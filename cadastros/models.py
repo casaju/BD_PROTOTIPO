@@ -13,21 +13,44 @@ class Usuario(models.Model):
 
 
 class CaoGuia(models.Model):
-    id_cao = models.CharField(primary_key=True, unique=True, max_length=36)
+    # Opções
+    VELOCIDADE_CHOICES = [
+        ('baixa', 'Baixa'),
+        ('moderada', 'Moderada'),
+        ('alta', 'Alta'),
+    ]
+    
+    # --- ETAPA 1 (Identificação e Básico) ---
+    id_cao = models.CharField(
+        primary_key=True, 
+        unique=True, 
+        max_length=36,
+        verbose_name="ID do Cão / Microchip",
+        help_text="Número de identificação único"
+    )
     nome_cao = models.CharField(max_length=255)
     raca = models.CharField(max_length=100)
-    sexo = models.CharField(max_length=10)
+    sexo = models.CharField(max_length=10) # Pode usar choices se quiser
     nascimento_cao = models.DateField()
-    peso_cao = models.FloatField()
-    tamanho = models.FloatField()
-    inicio_treinamento = models.DateField()
-    termino_treinamento = models.DateField()
-    total_horas_treinadas = models.IntegerField()
-    treinador_responsavel = models.CharField(max_length=255)
+    
+    # --- ETAPA 2 (Dados Técnicos e Complementares) ---
+    peso_cao = models.FloatField(null=True, blank=True)
+    tamanho = models.FloatField(verbose_name="Altura (cm)", null=True, blank=True)
+    velocidade_caminhada = models.CharField(
+        max_length=20, 
+        choices=VELOCIDADE_CHOICES, 
+        null=True, 
+        blank=True
+    )
+    
+    # Dados de Treinamento (Etapa 2)
+    inicio_treinamento = models.DateField(null=True, blank=True)
+    termino_treinamento = models.DateField(null=True, blank=True)
+    total_horas_treinadas = models.IntegerField(null=True, blank=True)
+    treinador_responsavel = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.nome_cao
-
 
 class Candidato(models.Model):
     # Opções

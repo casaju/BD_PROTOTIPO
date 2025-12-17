@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UsuarioForm,CandidatoEtapa1Form, CandidatoEtapa2Form, CaoGuiaForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm, BuscaCPFForm
+from .forms import UsuarioForm,CandidatoEtapa1Form, CandidatoEtapa2Form, CaoGuiaEtapa1Form, CaoGuiaEtapa2Form, BuscaCaoForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm, BuscaCPFForm
 from .forms import LoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .forms import CandidatoEtapa1Form, CandidatoEtapa2Form
-from .models import Candidato
+from .models import Candidato, CaoGuia
 from django.contrib import messages
 
 def cadastro_etapa1(request):
@@ -89,15 +89,44 @@ def cadastrar_usuario(request):
     return render(request, 'cadastros/cadastrosuser.html', context)
 
 
-def cadastrar_caoguia(request):
+def cadastro_cao_etapa1(request):
     if request.method == 'POST':
-        form = CaoGuiaForm(request.POST)
+        form = CaoGuiaEtapa1Form(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('cadastrar_caoguia')
+            messages.success(request, 'Cão cadastrado com sucesso (Etapa 1)!')
+            return redirect('home')
     else:
-        form = CaoGuiaForm()
-    return render(request, 'cadastros/cadastro.html', {'form': form, 'titulo': 'Cadastrar Cão-guia'})
+        form = CaoGuiaEtapa1Form()
+    return render(request, 'cadastros/cadastro_cao_etapa1.html', {'form': form, 'titulo': 'Cadastrar Cão: Dados Básicos'})
+
+def verificar_id_cao_etapa2(request):
+    if request.method == 'POST':
+        form = BuscaCaoForm(request.POST)
+        if form.is_valid():
+            id_cao = form.cleaned_data['id_cao']
+            if CaoGuia.objects.filter(pk=id_cao).exists():
+                return redirect('cadastro_cao_etapa2', id_cao=id_cao)
+            else:
+                messages.error(request, 'ID não encontrado. Cadastre a Etapa 1 primeiro.')
+    else:
+        form = BuscaCaoForm()
+    return render(request, 'cadastros/busca_id_cao.html', {'form': form, 'titulo': 'Buscar Cão para Etapa 2'})
+
+def cadastro_cao_etapa2(request, id_cao):
+    cao = get_object_or_404(CaoGuia, pk=id_cao)
+    if request.method == 'POST':
+        form = CaoGuiaEtapa2Form(request.POST, instance=cao)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cadastro do cão completado com sucesso!')
+            return redirect('home')
+    else:
+        form = CaoGuiaEtapa2Form(instance=cao)
+    return render(request, 'cadastros/cadastro_cao_etapa2.html', {
+        'form': form, 
+        'titulo': f'Complementar dados de: {cao.nome_cao}'
+    })
 
 def cadastrar_formacao(request):
     form = FormacaoDuplaForm(request.POST or None)
