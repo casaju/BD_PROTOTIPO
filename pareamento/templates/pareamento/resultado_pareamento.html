@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 40px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #333; text-align: center; }
+        .info-candidato { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        
+        .match-card { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .high-match { border-left-color: #4CAF50; } /* Verde para match alto */
+        .med-match { border-left-color: #FF9800; }  /* Laranja para médio */
+        .low-match { border-left-color: #f44336; }  /* Vermelho para baixo */
+
+        .score-badge { font-size: 1.2rem; font-weight: bold; color: #333; }
+        .btn-confirmar { background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; }
+        .btn-confirmar:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'selecionar_pareamento' %}" style="text-decoration: none; color: #666;">← Voltar</a>
+        
+        <div class="info-candidato">
+            <h2>Candidato: {{ candidato.nome_candidato }}</h2>
+            <p><strong>Perfil:</strong> Altura: {{ candidato.altura }}m | Peso: {{ candidato.peso_candidato }}kg | Vel: {{ candidato.velocidade_caminhada }} | Preferência: {{ candidato.get_sexo_desejado_cao_display }}</p>
+        </div>
+
+        <h3>Cães Compatíveis Encontrados:</h3>
+
+        {% for item in match_list %}
+            <div class="match-card {% if item.pontuacao >= 8 %}high-match{% elif item.pontuacao >= 5 %}med-match{% else %}low-match{% endif %}">
+                <div>
+                    <h3 style="margin: 0;">{{ item.cao.nome_cao }} ({{ item.cao.raca }})</h3>
+                    <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">
+                        Vel: {{ item.cao.velocidade_caminhada }} | Sexo: {{ item.cao.sexo }} | Altura: {{ item.cao.tamanho }}m
+                    </p>
+                </div>
+                
+                <div style="text-align: right;">
+                    <div class="score-badge">Compatibilidade: {{ item.pontuacao }}/10</div>
+                    <form method="post" action="{% url 'confirmar_pareamento' candidato.id_candidato item.cao.id_cao %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-confirmar" onclick="return confirm('Tem certeza que deseja formar esta dupla?');">
+                            Formar Dupla
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p>Nenhum cão disponível no momento.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

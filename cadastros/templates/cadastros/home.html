@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -11,21 +12,28 @@
             padding: 20px;
             background-color: #f9f9f9;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #666;
-        }
         
-        /* Container flexível para alinhar os cards */
+        /* --- ESTILO DO BANNER --- */
+        .banner-img {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            display: block;
+            margin: 0 auto 30px auto;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; }
+        
+        /* Container flexível */
         .container {
             display: flex;
-            justify-content: center; /* Centraliza no meio da tela */
-            align-items: flex-start; /* Alinha o topo dos cards */
-            gap: 20px; /* Espaço entre os cards */
-            flex-wrap: wrap; /* Permite quebrar linha se a tela for pequena */
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
             margin-top: 40px;
             max-width: 1200px;
             margin-left: auto;
@@ -38,17 +46,17 @@
             border: 1px solid #e1e1e1;
             border-radius: 10px;
             padding: 25px;
-            width: 300px; /* Largura fixa para ficarem iguais */
+            width: 250px; /* Ajustei levemente para caberem 4 lado a lado em telas grandes */
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             transition: transform 0.2s;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 200px; /* Altura mínima para ficarem parecidos */
+            min-height: 220px;
         }
 
         .card:hover {
-            transform: translateY(-5px); /* Efeito sutil ao passar o mouse */
+            transform: translateY(-5px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
 
@@ -60,7 +68,7 @@
 
         /* Estilo dos Botões */
         button {
-            width: 100%; /* Botão ocupa a largura do card */
+            width: 100%;
             padding: 12px;
             border: none;
             border-radius: 6px;
@@ -72,7 +80,7 @@
             transition: background-color 0.2s;
         }
 
-        /* Cores específicas para cada tipo de botão */
+        /* CORES DOS BOTÕES */
         .btn-verde { background-color: #4CAF50; }
         .btn-verde:hover { background-color: #45a049; }
 
@@ -85,28 +93,32 @@
         .btn-vermelho { background-color: #f44336; }
         .btn-vermelho:hover { background-color: #da190b; }
 
+        /* NOVO: Botão Roxo para Pareamento */
+        .btn-roxo { background-color: #9C27B0; }
+        .btn-roxo:hover { background-color: #7B1FA2; }
+
         .footer-link {
             display: block;
             margin-top: 50px;
             color: #666;
             text-decoration: none;
         }
-        .footer-link:hover {
-            text-decoration: underline;
-        }
+        .footer-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
+    <img src="{% static 'cadastros/images/image_0.png' %}" alt="Banner Cão-Guia Ideal" class="banner-img">
+
     <h1>Bem-vindo ao Sistema Cão-Guia Ideal 💚</h1>
-    <p>Selecione a área de cadastro desejada:</p>
+    <p>Selecione a área de gerenciamento:</p>
     
     <div class="container">
         
         <div class="card">
             <div>
                 <h2>Sistema</h2>
-                <p>Cadastro de usuários administrativos e funcionários.</p>
+                <p>Usuários administrativos.</p>
             </div>
             <a href="{% url 'cadastrar_usuario' %}">
                 <button class="btn-verde">Cadastrar Usuário</button>
@@ -129,13 +141,23 @@
         <div class="card">
             <div>
                 <h2>Candidatos</h2>
-                <p>Gerenciamento de Candidatos e solicitação de pareamento.</p>
+                <p>Solicitação de pareamento.</p>
             </div>
             <a href="{% url 'cadastro_etapa1' %}">
                 <button class="btn-azul">Etapa 1: Novo Cadastro</button>
             </a>
             <a href="{% url 'verificar_cpf_etapa2' %}">
-                <button class="btn-vermelho">Etapa 2: Continuar Cadastro</button>
+                <button class="btn-vermelho">Etapa 2: Continuar</button>
+            </a>
+        </div>
+
+        <div class="card" style="border-color: #9C27B0;">
+            <div>
+                <h2 style="color: #9C27B0;">Pareamento</h2>
+                <p>Inteligência artificial para formar duplas compatíveis.</p>
+            </div>
+            <a href="{% url 'selecionar_pareamento' %}">
+                <button class="btn-roxo">♥ Realizar Pareamento</button>
             </a>
         </div>
 

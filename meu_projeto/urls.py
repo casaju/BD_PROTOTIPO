@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('cadastros.urls')),
     path('', include('cadastros_mdb.urls')),
+    path('pareamento/', include('pareamento.urls')),
 ]

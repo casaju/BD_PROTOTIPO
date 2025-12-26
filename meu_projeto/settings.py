@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cadastros',
     'cadastros_mdb',
+    'pareamento',
 ]
 
 MIDDLEWARE = [
