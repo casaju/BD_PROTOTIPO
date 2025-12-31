@@ -1,50 +1,37 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from cadastros.models import Candidato, CaoGuia, FormacaoDupla
+from .models import Matching  # <--- Importe o novo modelo aqui
 from .forms import SelecaoPareamentoForm
 from datetime import date
 
+# ... (Mantenha as funções auxiliares: compatibilidade_numerica, ordinal, etc.) ...
+
 def compatibilidade_numerica(v1, v2, tolerancia):
-    """
-    Calcula score baseado na diferença numérica linear.
-    Quanto menor a diferença, maior o score.
-    """
-    if v1 is None or v2 is None:
-        return 0
+    if v1 is None or v2 is None: return 0
     diff = abs(v1 - v2)
-    score = 1 - (diff / tolerancia)
-    return max(0, score)
+    return max(0, 1 - (diff / tolerancia))
 
 def compatibilidade_ordinal(v1, v2, max_val=5):
-    """
-    Calcula score para escalas de 1 a 5 (ou outro max_val).
-    Converte strings para int antes de calcular.
-    """
     try:
         val1 = int(v1) if v1 else 0
         val2 = int(v2) if v2 else 0
-    except ValueError:
-        return 0
-    
+    except ValueError: return 0
     return 1 - (abs(val1 - val2) / max_val)
 
 def compatibilidade_binaria(v1, target):
-    """
-    Retorna 1 se v1 for igual ao target, senão 0.
-    Útil para 'Sim' (1) ou 'Não' (0).
-    """
-    try:
-        val1 = int(v1) if v1 else 0
-    except ValueError:
-        return 0
-    
+    try: val1 = int(v1) if v1 else 0
+    except ValueError: return 0
     return 1 if val1 == target else 0
 
-# CÁLCULO DO SCORE TOTAL 
-def calcular_compatibilidade(candidato, caes_disponiveis):
-    resultados = []
+# --- LÓGICA DO ALGORITMO ---
+
+def calcular_e_salvar_compatibilidade(candidato, caes_disponiveis):
+    # 1. Limpar matchings anteriores deste candidato para não duplicar (Opcional, mas recomendado)
+    Matching.objects.filter(candidato=candidato).delete()
+
+    matches_to_create = []
     
-    # DEFINIÇÃO DOS PESOS
     PESOS = {
         "altura": 3.0,
         "peso": 2.0,
@@ -57,53 +44,27 @@ def calcular_compatibilidade(candidato, caes_disponiveis):
     for cao in caes_disponiveis:
         score = 0
         
-        # 1. Altura (Tolerância: 20cm)
-        # O modelo está em CM? Se sim, 20 é ok. Se estiver em Metros, use 0.20.
-        # Assumindo CM conforme o verbose_name do seu model.
-        score += PESOS["altura"] * compatibilidade_numerica(
-            candidato.altura, cao.altura, tolerancia=20
-        )
+        score += PESOS["altura"] * compatibilidade_numerica(candidato.altura, cao.altura, 20)
+        score += PESOS["peso"] * compatibilidade_numerica(candidato.peso_candidato, cao.peso_cao, 15)
+        score += PESOS["velocidade"] * compatibilidade_ordinal(candidato.velocidade_caminhada, cao.velocidade_caminhada)
+        score += PESOS["ambiente"] * compatibilidade_ordinal(candidato.ambiente_moradia, cao.ambiente_preferencial)
+        score += PESOS["experiencia"] * compatibilidade_binaria(candidato.experiencia_com_caes, 1)
+        score += PESOS["sociabilidade"] * compatibilidade_ordinal(5, cao.sociabilidade)
 
-        # 2. Peso (Tolerância: 15kg)
-        score += PESOS["peso"] * compatibilidade_numerica(
-            candidato.peso_candidato, cao.peso_cao, tolerancia=15
-        )
+        # Arredonda score final
+        score_final = round(score, 2)
 
-        # 3. Velocidade (Escala 1 a 5)
-        score += PESOS["velocidade"] * compatibilidade_ordinal(
-            candidato.velocidade_caminhada, cao.velocidade_caminhada
-        )
+        # Cria o objeto Matching na memória (sem salvar ainda)
+        matches_to_create.append(Matching(
+            candidato=candidato,
+            cao=cao,
+            score_total=score_final
+        ))
 
-        # 4. Ambiente (Escala 1 a 5)
-        # Compara Ambiente Moradia do Candidato vs Ambiente Preferencial do Cão
-        score += PESOS["ambiente"] * compatibilidade_ordinal(
-            candidato.ambiente_moradia, cao.ambiente_preferencial
-        )
+    # 2. Salva todos de uma vez no banco (Bulk Create)
+    Matching.objects.bulk_create(matches_to_create)
 
-        # 5. Experiência (Binária)
-        # Verifica se o candidato marcou '1' (Sim) na experiência
-        score += PESOS["experiencia"] * compatibilidade_binaria(
-            candidato.experiencia_com_caes, 1
-        )
-
-        # 6. Sociabilidade (Comparado ao ideal 5)
-        # Quanto mais próximo de 5 a sociabilidade do cão, melhor
-        score += PESOS["sociabilidade"] * compatibilidade_ordinal(
-            5, cao.sociabilidade
-        )
-
-        resultados.append({
-            'cao': cao,
-            'pontuacao': round(score, 2)
-        })
-
-    # Ordena do maior score para o menor
-    resultados.sort(key=lambda x: x['pontuacao'], reverse=True)
-    return resultados
-
-
-# VIEWS DO DJANGO
-
+# --- VIEWS ---
 
 def selecionar_pareamento(request):
     if request.method == 'POST':
@@ -113,25 +74,31 @@ def selecionar_pareamento(request):
             return redirect('resultado_pareamento', cpf=candidato.id_candidato)
     else:
         form = SelecaoPareamentoForm()
-    
     return render(request, 'pareamento/selecao.html', {'form': form, 'titulo': 'Iniciar Pareamento'})
 
 def resultado_pareamento(request, cpf):
     candidato = get_object_or_404(Candidato, pk=cpf)
     
-    # Filtra cães que NÃO estão em uma dupla ativa
+    # Filtra cães disponíveis
     caes_indisponiveis = FormacaoDupla.objects.filter(data_fim__isnull=True).values_list('cao_id', flat=True)
     caes_disponiveis = CaoGuia.objects.exclude(id_cao__in=caes_indisponiveis)
     
-    # Chama a função de cálculo atualizada
-    match_list = calcular_compatibilidade(candidato, caes_disponiveis)
+    # 1. Executa o cálculo e SALVA no banco
+    calcular_e_salvar_compatibilidade(candidato, caes_disponiveis)
     
-    # Opcional: Pegar apenas o TOP 5 como no seu exemplo SQL
-    # match_list = match_list[:5] 
+    # 2. Busca os resultados DO BANCO (Tabela Matching), ordenados pelo score
+    match_list = Matching.objects.filter(candidato=candidato).order_by('-score_total')
+    
+    # (Opcional) Limitar ao Top 5
+    # match_list = match_list[:5]
+
+    # Ajuste para o template: O template espera um objeto com .cao e .pontuacao
+    # O modelo Matching tem .cao e .score_total. 
+    # Podemos passar a lista de objetos Matching direto, mas precisaremos ajustar o template.
     
     return render(request, 'pareamento/resultado.html', {
         'candidato': candidato,
-        'match_list': match_list,
+        'match_list': match_list, # Agora enviamos objetos 'Matching'
         'titulo': f'Compatibilidade para {candidato.nome_candidato}'
     })
 
@@ -140,13 +107,12 @@ def confirmar_pareamento(request, cpf, id_cao):
     cao = get_object_or_404(CaoGuia, pk=id_cao)
     
     if request.method == 'POST':
-        # Cria a dupla no banco de dados
         FormacaoDupla.objects.create(
             Candidato=candidato,
             cao=cao,
             data_inicio=date.today()
         )
-        messages.success(request, f'Dupla formada com sucesso: {candidato.nome_candidato} e {cao.nome_cao}!')
+        messages.success(request, f'Dupla formada com sucesso!')
         return redirect('home')
     
     return redirect('resultado_pareamento', cpf=cpf)

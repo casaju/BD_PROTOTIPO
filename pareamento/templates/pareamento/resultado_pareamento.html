@@ -31,7 +31,7 @@
         <h3>Cães Compatíveis Encontrados:</h3>
 
         {% for item in match_list %}
-            <div class="match-card {% if item.pontuacao >= 8 %}high-match{% elif item.pontuacao >= 5 %}med-match{% else %}low-match{% endif %}">
+            <div class="match-card {% if item.score_total >= 8 %}pontuacao >= 8 %}high-match{% elif item.pontuacao >= 5 %}med-match{% else %}low-match{% endif %}">
                 <div>
                     <h3 style="margin: 0;">{{ item.cao.nome_cao }} ({{ item.cao.raca }})</h3>
                     <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">
@@ -40,7 +40,7 @@
                 </div>
                 
                 <div style="text-align: right;">
-                    <div class="score-badge">Compatibilidade: {{ item.pontuacao }}/10</div>
+                    <div class="score-badge">Compatibilidade: {{ item.score_total }}/10</div>
                     <form method="post" action="{% url 'confirmar_pareamento' candidato.id_candidato item.cao.id_cao %}">
                         {% csrf_token %}
                         <button type="submit" class="btn-confirmar" onclick="return confirm('Tem certeza que deseja formar esta dupla?');">
