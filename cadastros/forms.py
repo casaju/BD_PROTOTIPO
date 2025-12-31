@@ -2,7 +2,6 @@ from django import forms
 from .models import Candidato, Usuario, CaoGuia, FormacaoDupla
 from django.contrib.auth.forms import UserCreationForm
 
-
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text='')
     class Meta(UserCreationForm.Meta):
@@ -12,9 +11,8 @@ class CustomUserCreationForm(UserCreationForm):
             'email': 'Email',
         }
         help_texts = {
-            'username': None, # Remove a ajuda do campo username
+            'username': None,
         }
-
 
 class UsuarioForm(forms.ModelForm):
     class Meta:
@@ -33,25 +31,30 @@ class CaoGuiaEtapa1Form(forms.ModelForm):
             'nascimento_cao': forms.DateInput(attrs={'type': 'date'}),
         }
 
-# 2. Busca ID (Para entrar na etapa 2)
 class BuscaCaoForm(forms.Form):
     id_cao = forms.CharField(label='ID do Cão / Microchip', max_length=36)
 
-# 3. Etapa 2: Dados Complementares
+# --- ATUALIZADO: Campos novos (Ambiente, Sociabilidade, Altura) ---
 class CaoGuiaEtapa2Form(forms.ModelForm):
     class Meta:
         model = CaoGuia
         fields = [
-            'peso_cao', 'tamanho', 'velocidade_caminhada',
+            'peso_cao', 'altura', 'velocidade_caminhada',
+            'ambiente_preferencial', 'sociabilidade',
             'inicio_treinamento', 'termino_treinamento', 
             'total_horas_treinadas', 'treinador_responsavel'
         ]
+        labels = {
+            'altura': 'Altura (cm)',
+            'velocidade_caminhada': 'Nível de Velocidade (1-5)',
+            'ambiente_preferencial': 'Ambiente Ideal',
+            'sociabilidade': 'Nível de Sociabilidade'
+        }
         widgets = {
             'inicio_treinamento': forms.DateInput(attrs={'type': 'date'}),
             'termino_treinamento': forms.DateInput(attrs={'type': 'date'}),
         }
 
-#formulário da Etapa 1
 class CandidatoEtapa1Form(forms.ModelForm):
     class Meta:
         model = Candidato
@@ -61,13 +64,24 @@ class CandidatoEtapa1Form(forms.ModelForm):
             'nascimento_candidato': forms.DateInput(attrs={'type': 'date'}),
         }
 
-# Formulário Etapa 2: Dados complementares
+# --- ATUALIZADO: Novos campos e remoção de sexo_desejado_cao ---
 class CandidatoEtapa2Form(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = ['peso_candidato', 'altura', 'religiao', 'velocidade_caminhada', 'sexo_desejado_cao']
+        fields = [
+            'peso_candidato', 'altura', 'religiao', 
+            'velocidade_caminhada', 'ambiente_moradia', 
+            'experiencia_com_caes', 'estado_civil'
+        ]
+        labels = {
+            'velocidade_caminhada': 'Sua Velocidade de Caminhada (1-5)',
+            'ambiente_moradia': 'Onde você mora?',
+            'experiencia_com_caes': 'Possui experiência com cães?',
+        }
+        widgets = {
+            'experiencia_com_caes': forms.Select(choices=[('0', 'Não'), ('1', 'Sim')])
+        }
 
-# Novo Formulário: Apenas para verificar o CPF antes de entrar na Etapa 2
 class BuscaCPFForm(forms.Form):
     cpf = forms.CharField(label='Digite o CPF do Candidato', max_length=14)
 
