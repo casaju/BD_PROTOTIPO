@@ -15,39 +15,68 @@ class Usuario(models.Model):
 class CaoGuia(models.Model):
     # Opções
     VELOCIDADE_CHOICES = [
-        ('baixa', 'Baixa'),
-        ('moderada', 'Moderada'),
-        ('alta', 'Alta'),
+        ('1', 'Baixa'),
+        ('2', 'Média'),
+        ('3', 'Moderada'),
+        ('4', 'Rápida'),
+        ('5', 'Muito Rápida'),
     ]
     
+    AMBIENTE_CHOICES = [
+        ('1', 'Rural'),
+        ('2', 'Urbano'),
+        ('3', 'Barulhento'),
+        ('4', 'Calmo'),
+        ('5', 'Animais'),
+    ]
+
+    SOCIABILIDADE_CHOICES = [
+            ('1', 'Baixa'),
+            ('2', 'Média'),
+            ('3', 'Moderada'),
+            ('4', 'Sociável'),
+            ('5', 'Muito Sociável'),
+        ]
     # --- ETAPA 1 (Identificação e Básico) ---
     id_cao = models.CharField(
         primary_key=True, 
         unique=True, 
         max_length=36,
         verbose_name="ID do Cão / Microchip",
-        help_text="Número de identificação único"
     )
     nome_cao = models.CharField(max_length=255)
     raca = models.CharField(max_length=100)
-    sexo = models.CharField(max_length=10) # Pode usar choices se quiser
+    sexo = models.CharField(max_length=10) 
     nascimento_cao = models.DateField()
     
     # --- ETAPA 2 (Dados Técnicos e Complementares) ---
     peso_cao = models.FloatField(null=True, blank=True)
-    tamanho = models.FloatField(verbose_name="Altura (cm)", null=True, blank=True)
+    altura = models.FloatField(verbose_name="Altura (cm)", null=True, blank=True)
     velocidade_caminhada = models.CharField(
         max_length=20, 
         choices=VELOCIDADE_CHOICES, 
         null=True, 
-        blank=True
+        blank=True,
     )
-    
+    ambiente_preferencial = models.CharField(
+        max_length=20, 
+        choices=AMBIENTE_CHOICES, 
+        null=True, 
+        blank=True,
+    )
+    sociabilidade = models.CharField(
+        max_length=20, 
+        choices=SOCIABILIDADE_CHOICES, 
+        null=True, 
+        blank=True,
+    )
     # Dados de Treinamento (Etapa 2)
     inicio_treinamento = models.DateField(null=True, blank=True)
     termino_treinamento = models.DateField(null=True, blank=True)
     total_horas_treinadas = models.IntegerField(null=True, blank=True)
     treinador_responsavel = models.CharField(max_length=255, null=True, blank=True)
+
+    data_registro = models.DateTimeField(auto_now_add=True, verbose_name="Data de Registro")
 
     def __str__(self):
         return self.nome_cao
@@ -55,9 +84,27 @@ class CaoGuia(models.Model):
 class Candidato(models.Model):
     # Opções
     SEXO_CHOICES = [('M', 'Masculino'), ('F', 'Feminino')]
-    VELOCIDADE_CHOICES = [('baixa', 'Baixa'), ('moderada', 'Moderada'), ('alta', 'Alta')]
-    PREFERENCIA_SEXO_CAO = [('M', 'Macho'), ('F', 'Fêmea'), ('indiferente', 'Indiferente')]
+    VELOCIDADE_CHOICES = [
+        ('1', 'Baixa'),
+        ('2', 'Média'),
+        ('3', 'Moderada'),
+        ('4', 'Rápida'),
+        ('5', 'Muito Rápida'),
+    ]
     
+    AMBIENTE_CHOICES = [
+        ('1', 'Rural'),
+        ('2', 'Urbano'),
+        ('3', 'Barulhento'),
+        ('4', 'Calmo'),
+        ('5', 'Animais'),
+    ]
+
+    EXPERIENCIA_CHOICES = [
+        ('0', 'Não'),
+        ('1', 'Sim'),
+    ]
+
     class Considerado(models.TextChoices):
         APTO = 'Apto', 'Apto'
         INAPTO = 'Inapto', 'Inapto'
@@ -81,9 +128,20 @@ class Candidato(models.Model):
     altura = models.FloatField(null=True, blank=True)
     peso_candidato = models.FloatField(null=True, blank=True)
     religiao = models.CharField(max_length=100, null=True, blank=True)
-    velocidade_caminhada = models.CharField(max_length=20, choices=VELOCIDADE_CHOICES, null=True, blank=True)
-    sexo_desejado_cao = models.CharField(max_length=20, choices=PREFERENCIA_SEXO_CAO, null=True, blank=True)
+    velocidade_caminhada = models.CharField(
+        max_length=20,
+        choices=VELOCIDADE_CHOICES,
+        null=True,
+        blank=True
+    )
+
+    ambiente_moradia = models.CharField(
+        max_length=20, choices=AMBIENTE_CHOICES,
+        null=True,
+        blank=True)
     
+    experiencia_com_caes = models.CharField(
+        max_length=1,)
     # Outros
     estado_civil = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=10, choices=Considerado.choices, default=Considerado.APTO)
@@ -92,10 +150,9 @@ class Candidato(models.Model):
         return f"{self.nome_candidato} ({self.id_candidato})"
 
 class FormacaoDupla(models.Model):
-    
+    id_dupla = models.AutoField(primary_key=True, unique=True)
     cao = models.ForeignKey(CaoGuia, null=True, on_delete=models.SET_NULL)
-    usuario = models.ForeignKey(Candidato, null=True, on_delete=models.SET_NULL)
-    data_inicio = models.DateField()
-    data_fim = models.DateField(blank=True, null=True)
+    Candidato = models.ForeignKey(Candidato, null=True, on_delete=models.SET_NULL)
+    data_registro = models.DateTimeField(auto_now_add=True, verbose_name="Data de Registro")
 
 
