@@ -153,6 +153,7 @@ class FormacaoDupla(models.Model):
     id_dupla = models.AutoField(primary_key=True, unique=True)
     cao = models.ForeignKey(CaoGuia, null=True, on_delete=models.SET_NULL)
     Candidato = models.ForeignKey(Candidato, null=True, on_delete=models.SET_NULL)
+    data_inicio = models.DateField(null=True, blank=True)
+    data_fim = models.DateField(null=True, blank=True)
     data_registro = models.DateTimeField(auto_now_add=True, verbose_name="Data de Registro")
-
 
