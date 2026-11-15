@@ -1,166 +1,343 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>Página Inicial - Projeto Cão-Guia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial - O Cão-Guia Ideal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
+        :root {
+            --bg-color: #f4f8f5;
+            --text-main: #2c3e50;
+            --text-muted: #6c7a89;
+            --card-bg: #ffffff;
+            
+            /* Cores de destaque da imagem */
+            --color-green: #4CAF50;
+            --color-orange: #ff9800;
+            --color-blue: #2196F3;
+            --color-red: #f44336;
+            --color-purple: #9C27B0;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        
-        /* --- ESTILO DO BANNER --- */
-        .banner-img {
-            width: 100%;
-            max-width: 900px;
-            height: auto;
-            display: block;
-            margin: 0 auto 30px auto;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
         }
 
-        h1 { color: #333; margin-bottom: 10px; }
-        p { color: #666; }
-        
-        /* Container flexível */
-        .container {
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 40px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        /* Estilo dos Cartões */
+        /* Navbar Topo */
+        .navbar {
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Estilo da nova imagem do logo */
+        .brand-logo {
+            height: 55px; /* Tamanho ajustável */
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Estilos do Utilizador Logado e Botão Entrar */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--text-main);
+            background: white;
+            padding: 5px 15px 5px 5px;
+            border-radius: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        .user-avatar {
+            background-color: var(--color-green);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .btn-entrar {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--color-green);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .btn-entrar:hover {
+            border-color: var(--color-green);
+            background: #f0fdf4;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin: 40px 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 10px auto;
+        }
+
+        .hero .subtitle {
+            font-size: 0.95rem;
+            color: #888;
+        }
+
+        /* Grid de Cartões */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1000px;
+            margin-bottom: 30px;
+        }
+
         .card {
-            background-color: white;
-            border: 1px solid #e1e1e1;
-            border-radius: 10px;
-            padding: 25px;
-            width: 250px; /* Ajustei levemente para caberem 4 lado a lado em telas grandes */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px 25px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            border: 1px solid #eee;
+            transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 220px;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        .card:hover { transform: translateY(-5px); }
+
+        /* Cores específicas das bordas dos cartões */
+        .card-caes { border-top: 4px solid var(--color-orange); }
+        .card-candidatos { border-top: 4px solid var(--color-blue); }
+        .card-pareamento { border-top: 4px solid var(--color-purple); width: 450px; }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            font-size: 1.5rem;
         }
 
-        .card h2 {
-            color: #2c3e50;
-            margin-top: 0;
-            font-size: 1.4rem;
-        }
+        .card-caes .icon-circle { background: #fff3e0; color: var(--color-orange); }
+        .card-candidatos .icon-circle { background: #e3f2fd; color: var(--color-blue); }
+        .card-pareamento .icon-circle { background: #f3e5f5; color: var(--color-purple); }
 
-        /* Estilo dos Botões */
-        button {
+        .card h2 { font-size: 1.3rem; margin-bottom: 10px; }
+        .card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5; }
+
+        /* Botões */
+        .btn {
+            display: block;
             width: 100%;
             padding: 12px;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 8px;
             color: white;
-            margin-top: 8px;
-            transition: background-color 0.2s;
-        }
-
-        /* CORES DOS BOTÕES */
-        .btn-verde { background-color: #4CAF50; }
-        .btn-verde:hover { background-color: #45a049; }
-
-        .btn-azul { background-color: #008CBA; }
-        .btn-azul:hover { background-color: #007bb5; }
-
-        .btn-laranja { background-color: #ff9800; }
-        .btn-laranja:hover { background-color: #e68900; }
-        
-        .btn-vermelho { background-color: #f44336; }
-        .btn-vermelho:hover { background-color: #da190b; }
-
-        .btn-roxo { background-color: #9C27B0; }
-        .btn-roxo:hover { background-color: #7B1FA2; }
-
-        .footer-link {
-            display: block;
-            margin-top: 50px;
-            color: #666;
+            font-weight: 700;
+            font-size: 0.95rem;
             text-decoration: none;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+
+        .btn:hover { opacity: 0.9; }
+        
+        .btn-green { background-color: var(--color-green); }
+        .btn-orange { background-color: var(--color-orange); }
+        .btn-blue { background-color: var(--color-blue); }
+        .btn-red { background-color: var(--color-red); }
+        .btn-purple { background-color: var(--color-purple); }
+
+        /* Seção de Features (Rodapé) */
+        .features-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 40px;
+            display: flex;
+            gap: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin: 20px 0 40px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            max-width: 200px;
+        }
+
+        .feature-item i {
+            font-size: 1.4rem;
+            color: var(--color-green);
+        }
+
+        .feature-text h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 3px; }
+        .feature-text p { font-size: 0.75rem; color: var(--text-muted); }
+
+        .link-sair {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 40px;
+            transition: color 0.2s;
+        }
+        .link-sair:hover { color: var(--text-main); text-decoration: underline; }
+
     </style>
 </head>
 <body>
 
-    <h1>Bem-vindo ao Sistema Cão-Guia Ideal 💚</h1>
-    <p>Selecione a área de gerenciamento:</p>
-    
-    <div class="container">
+    <nav class="navbar">
+        <div class="brand">
+            <img src="{% static 'cadastros/images/imagem_cao-guia_celular.png' %}" alt="Logo Cão-Guia" class="brand-logo">
+            O Cão-Guia Ideal
+        </div>
         
-        <div class="card">
-            <div>
-                <h2>Sistema</h2>
-                <p>Usuários administrativos.</p>
-            </div>
-            <a href="{% url 'cadastrar_usuario' %}">
-                <button class="btn-verde">Cadastrar Usuário</button>
-            </a>
+        <div class="user-menu">
+            {% if user.is_authenticated %}
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <span>Olá, {{ user.username }}</span>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-entrar">
+                    <i class="fa-regular fa-user"></i> Entrar
+                </a>
+            {% endif %}
         </div>
+    </nav>
 
-        <div class="card">
+    <main class="hero">
+        <h1>Bem-vindo ao Sistema Cão-Guia Ideal 💚</h1>
+        <span class="subtitle">Selecione a área de gestão:</span>
+    </main>
+
+    <section class="cards-grid">
+        
+        <div class="card card-caes">
             <div>
+                <div class="icon-circle">
+                    <i class="fa-solid fa-dog"></i>
+                </div>
                 <h2>Cães-Guia</h2>
-                <p>Cadastro técnico e básico.</p>
+                <p>Informações detalhadas.</p>
             </div>
-            <a href="{% url 'cadastro_cao_etapa1' %}">
-                <button class="btn-verde">Etapa 1: Novo Cão</button>
-            </a>
-            <a href="{% url 'verificar_id_cao_etapa2' %}">
-                <button class="btn-laranja">Etapa 2: Complementar</button>
-            </a>
+            <div>
+                <a href="{% url 'cadastro_cao_etapa1' %}" class="btn btn-green">
+                    <i class="fa-solid fa-paw"></i> Etapa 1: Novo Cão
+                </a>
+                <a href="{% url 'verificar_id_cao_etapa2' %}" class="btn btn-orange">
+                    <i class="fa-regular fa-file-lines"></i> Etapa 2: Complementar
+                </a>
+            </div>
         </div>
 
-        <div class="card">
+        <div class="card card-candidatos">
             <div>
+                <div class="icon-circle">
+                    <i class="fa-regular fa-user"></i>
+                </div>
                 <h2>Candidatos</h2>
-                <p>Solicitação de pareamento.</p>
+                <p>Cadastros e gerenciamento de Candidatos.</p>
             </div>
-            <a href="{% url 'cadastro_etapa1' %}">
-                <button class="btn-azul">Etapa 1: Novo Cadastro</button>
-            </a>
-            <a href="{% url 'verificar_cpf_etapa2' %}">
-                <button class="btn-vermelho">Etapa 2: Continuar</button>
-            </a>
-        </div>
-
-        <div class="card" >
             <div>
-                <h2>Pareamento</h2>
-                <p>Sistema para formar duplas compatíveis.</p>
+                <a href="{% url 'cadastro_etapa1' %}" class="btn btn-blue">
+                    <i class="fa-solid fa-user-plus"></i> Etapa 1: Novo Registo
+                </a>
+                <a href="{% url 'verificar_cpf_etapa2' %}" class="btn btn-red">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Etapa 2: Informações detalhadas
+                </a>
             </div>
-            <a href="{% url 'selecionar_pareamento' %}">
-                <button class="btn-roxo">♥ Realizar Pareamento</button>
-            </a>
         </div>
 
-    </div>
+    </section>
 
-    <hr style="margin-top: 50px; border: 0; border-top: 1px solid #eee;">
-    <a href="{% url 'login' %}" class="footer-link">Sair / Voltar ao Login</a>
+    <section class="cards-grid" style="margin-top: -10px;">
+        <div class="card card-pareamento">
+            <div>
+                <div class="icon-circle">
+                    <i class="fa-regular fa-heart"></i>
+                </div>
+                <h2>Pareamento</h2>
+                <p>Sistema para formar as duplas entre cães e candidatos.</p>
+            </div>
+            <a href="{% url 'selecionar_pareamento' %}" class="btn btn-purple" style="margin-top: 15px;">
+                <i class="fa-regular fa-heart"></i> Realizar Pareamento
+            </a>
+        </div>
+    </section>
+
+
+    <a href="{% url 'login' %}" class="link-sair">Sair / Voltar ao Login</a>
 
 </body>
 </html>

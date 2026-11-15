@@ -23,36 +23,59 @@ class UsuarioForm(forms.ModelForm):
             'tipo': 'Tipo de Usuário',
         }
 
-class CaoGuiaEtapa1Form(forms.ModelForm):
+class CandidatoEtapa1Form(forms.ModelForm):
     class Meta:
-        model = CaoGuia
-        fields = ['id_cao', 'nome_cao', 'raca', 'sexo', 'nascimento_cao']
+        model = Candidato
+        # Etapa 1: Foco em Identificação e Dados Físicos
+        fields = [
+            'id_candidato',
+            'nome_candidato', 
+            'nascimento_candidato', 
+            'sexo', 
+            'altura', 
+            'peso', 
+            'velocidade_caminhada'
+        ]
         widgets = {
-            'nascimento_cao': forms.DateInput(attrs={'type': 'date'}),
+            'id_candidato': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite o CPF'}),
+            'nome_candidato': forms.TextInput(attrs={'class': 'form-control'}),
+            'nascimento_candidato': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'sexo': forms.Select(attrs={'class': 'form-control'}),
+            'altura': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Ex: 1.75'}),
+            'peso': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'placeholder': 'Ex: 70.5'}),
+            'velocidade_caminhada': forms.Select(attrs={'class': 'form-control'}),
         }
-
 class BuscaCaoForm(forms.Form):
     id_cao = forms.CharField(label='ID do Cão / Microchip', max_length=36)
 
 # --- ATUALIZADO: Campos novos (Ambiente, Sociabilidade, Altura) ---
-class CaoGuiaEtapa2Form(forms.ModelForm):
+class CandidatoEtapa2Form(forms.ModelForm):
     class Meta:
-        model = CaoGuia
+        model = Candidato
+        # Etapa 2: Foco em Rotina, Comportamento e Ambiente de Moradia
         fields = [
-            'peso_cao', 'altura', 'velocidade_caminhada',
-            'ambiente_preferencial', 'sociabilidade',
-            'inicio_treinamento', 'termino_treinamento', 
-            'total_horas_treinadas', 'treinador_responsavel'
+            'tipo_moradia',
+            'mora_com_criancas',
+            'ambiente_muito_movimentado',
+            'possui_outros_animais',
+            'nivel_atividade',
+            'complexidade_rotina',
+            'capacidade_conducao',
+            'nivel_distracao_trajetos',
+            'caracteristicas_ambientais',
+            'experiencia_cao_guia'
         ]
-        labels = {
-            'altura': 'Altura (cm)',
-            'velocidade_caminhada': 'Nível de Velocidade (1-5)',
-            'ambiente_preferencial': 'Ambiente Ideal',
-            'sociabilidade': 'Nível de Sociabilidade'
-        }
         widgets = {
-            'inicio_treinamento': forms.DateInput(attrs={'type': 'date'}),
-            'termino_treinamento': forms.DateInput(attrs={'type': 'date'}),
+            'tipo_moradia': forms.Select(attrs={'class': 'form-control'}),
+            'mora_com_criancas': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'ambiente_muito_movimentado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'possui_outros_animais': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'nivel_atividade': forms.Select(attrs={'class': 'form-control'}),
+            'complexidade_rotina': forms.Select(attrs={'class': 'form-control'}),
+            'capacidade_conducao': forms.Select(attrs={'class': 'form-control'}),
+            'nivel_distracao_trajetos': forms.Select(attrs={'class': 'form-control'}),
+            'caracteristicas_ambientais': forms.Select(attrs={'class': 'form-control'}),
+            'experiencia_cao_guia': forms.Select(attrs={'class': 'form-control'}),
         }
 
 class CandidatoEtapa1Form(forms.ModelForm):

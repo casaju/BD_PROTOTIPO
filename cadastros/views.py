@@ -157,8 +157,8 @@ def login_view(request):
                 user_obj = None
                 username = None
 
-            # Autentica o usuário usando o username e a senha
-            user = authenticate(request, username=username, password=senha)
+            # Autentica o usuário usando o email e a senha
+            user = authenticate(request, username=email, password=senha)
             
             if user is not None:
                 login(request, user)

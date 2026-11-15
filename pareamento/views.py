@@ -3,165 +3,114 @@ from django.contrib import messages
 from cadastros.models import Candidato, CaoGuia, FormacaoDupla
 from .models import Matching
 from .forms import SelecaoPareamentoForm
-from datetime import date
+from datetime import date   
 
-def definir_peso_ideal_cao(peso_candidato):
-    """
-    Define o peso ideal do cão baseado no peso do candidato.
-    """
-    if peso_candidato is None:
-        return 32 # Peso médio padrão de um Labrador/Golden
-        
-    if peso_candidato <= 60: 
-        # Pessoa Leve (até 60kg) -> Cão mais compacto
-        return 27  # kg
-        
-    elif 60 < peso_candidato <= 85:
-        # Pessoa Média -> Cão Padrão
-        return 32  # kg
-        
-    else:
-        # Pessoa Pesada (> 85kg) -> Cão Robusto
-        return 38  
+def calcular_indice_compatibilidade(cao, candidato):
+    # Definindo os pesos para o cálculo (índice tecnicamente justificável)
+    PESO_ALTO = 20    # Variáveis fundamentais
+    PESO_MEDIO = 10   # Variáveis importantes, mas secundárias
+    PESO_BAIXO = 5    # Variáveis de ajuste fino (nome, raça, sexo têm peso 0 ou 1 no seu sistema)
     
-def definir_altura_ideal_cao(altura_candidato):
-    """
-    Define a altura ideal do cão baseada na estatura do candidato.
-    """
-    if altura_candidato is None:
-        return 50 # Retorna um tamanho médio padrão se não tiver dados
+    score_total = 0
+    score_maximo_possivel = (PESO_ALTO * 5) + (PESO_MEDIO * 5) # Total base para gerar uma porcentagem
+
+    # =====================================================================
+    # BLOCO 1: VARIÁVEIS DE ALTO PESO (Fundamentais para o sucesso)
+    # =====================================================================
+
+    # 1. Velocidade cão ↔ velocidade usuário
+    if cao.velocidade == candidato.velocidade_caminhada:
+        score_total += PESO_ALTO
+
+    # 2. Exigência de condução cão ↔ capacidade de condução do usuário
+    if cao.exigencia_conducao == candidato.capacidade_conducao:
+        score_total += PESO_ALTO
+    elif cao.exigencia_conducao == 'Alta' and candidato.capacidade_conducao == 'Média':
+        # Penalidade forte: Cão exige muito, mas usuário tem capacidade média
+        score_total -= (PESO_ALTO / 2)
+
+    # 3. Complexidade de trabalho cão ↔ complexidade da rotina
+    if cao.complexidade_trabalho == candidato.complexidade_rotina:
+        score_total += PESO_ALTO
+    elif cao.complexidade_trabalho == 'Alta' and candidato.complexidade_rotina == 'Média':
+        # Cão superqualificado para rotina média (ok, mas sem bônus máximo)
+        score_total += (PESO_ALTO / 2)
+
+    # 4. Concentração cão ↔ nível de distração dos trajetos
+    if cao.concentracao == 'Alta' and candidato.nivel_distracao_trajetos == 'Alto':
+        score_total += PESO_ALTO
+    elif cao.concentracao == 'Alta' and candidato.nivel_distracao_trajetos in ['Médio', 'Baixo']:
+        score_total += PESO_ALTO * 0.8  # Cão muito concentrado em rotina calma é ótimo
+    elif cao.concentracao == 'Média' and candidato.nivel_distracao_trajetos in ['Médio', 'Baixo']:
+        score_total += PESO_ALTO
+    elif cao.concentracao == 'Baixa' and candidato.nivel_distracao_trajetos == 'Alto':
+        # Penalidade: Cão distrai fácil em rota complexa = perigoso
+        score_total -= PESO_ALTO
+
+    # 5. Adequação Física: Altura e Peso ↔ características físicas do usuário
+    margem_altura = 15 # ex: diferença máxima de 15cm considerada ideal
+    margem_peso = 20   # ex: diferença de proporção de peso
+    adequacao_fisica = 0
+    if abs(cao.altura - candidato.altura) <= margem_altura:
+        adequacao_fisica += (PESO_ALTO / 2)
+    if abs(cao.peso - candidato.peso) <= margem_peso:
+        adequacao_fisica += (PESO_ALTO / 2)
+    score_total += adequacao_fisica
+
+
+    # =====================================================================
+    # BLOCO 2: VARIÁVEIS DE MÉDIO PESO (Comportamento e Rotina Diária)
+    # =====================================================================
+
+    # 6. Energia cão ↔ nível de atividade do usuário
+    if cao.nivel_energia == candidato.nivel_atividade:
+        score_total += PESO_MEDIO
+    
+    # 7. Sociabilidade/convívio cão ↔ presença de pessoas/animais na rotina
+    if cao.sociabilidade == candidato.presenca_pessoas_animais:
+        score_total += PESO_MEDIO
+
+    # 8. Temperamento cão ↔ características ambientais da rotina
+    # Ex: Cão calmo vai bem em ambientes movimentados ou tranquilos; cão agitado precisa de vazão
+    if cao.temperamento == 'Calmo' and candidato.caracteristicas_ambientais == 'Movimentado':
+        score_total += PESO_MEDIO
+    elif cao.temperamento == candidato.caracteristicas_ambientais: # Lógica simplificada de match
+        score_total += PESO_MEDIO
+
+    # 9. Experiência do usuário ↔ necessidade de manejo do cão
+    # Cães que precisam de muito manejo devem ir para usuários experientes
+    if cao.necessidade_manejo == 'Alta' and candidato.experiencia_cao_guia == 'Experiente':
+        score_total += PESO_MEDIO
+    elif cao.necessidade_manejo == 'Baixa':
+        # Cão fácil de manejar atende a qualquer usuário
+        score_total += PESO_MEDIO
+    elif cao.necessidade_manejo == 'Alta' and candidato.experiencia_cao_guia in ['Nenhuma', 'Iniciante']:
+        # Penalidade de manejo
+        score_total -= PESO_MEDIO
+
+    # 10. Presença de outros animais (Convívio direto)
+    # Se o candidato tem animais, o cão TEM que ter bom histórico de convívio
+    if candidato.presenca_pessoas_animais == 'Alta' and cao.sociabilidade == 'Alta':
+        score_total += PESO_MEDIO
+
+
+    # =====================================================================
+    # CÁLCULO FINAL: GERANDO O ÍNDICE (%)
+    # =====================================================================
+    
+    # Previne scores negativos caso o candidato seja totalmente incompatível
+    if score_total < 0:
+        score_total = 0
         
-    if altura_candidato <= 165: 
-        return 35 
-    elif 165 < altura_candidato <= 180:
-        # Pessoa Média -> Cão Médio
-        return 55
-    else:
-        # Pessoa Alta -> Cão Grande
-        return 65
+    # Calcula a porcentagem de compatibilidade
+    indice_compatibilidade = (score_total / score_maximo_possivel) * 100
     
-# FUNÇÕES DE CÁLCULO 
-def compatibilidade_numerica(v1, v2, tolerancia):
-    if v1 is None or v2 is None: return 0
-    diff = abs(v1 - v2)
-    return max(0, 1 - (diff / tolerancia))
+    # Limita a 100% no máximo
+    if indice_compatibilidade > 100:
+        indice_compatibilidade = 100
 
-def compatibilidade_ordinal(v1, v2, max_val=5):
-    try:
-        val1 = int(v1) if v1 else 0
-        val2 = int(v2) if v2 else 0
-    except ValueError: return 0
-    return 1 - (abs(val1 - val2) / max_val)
-
-def compatibilidade_binaria(v1, target):
-    try: val1 = int(v1) if v1 else 0
-    except ValueError: return 0
-    return 1 if val1 == target else 0
-
-# ALGORITMO PRINCIPAL 
-def calcular_e_salvar_compatibilidade(candidato, caes_disponiveis):
-    # Limpa matchings anteriores
-    Matching.objects.filter(candidato=candidato).delete()
-    
-    PESOS = {
-        "altura": 3.0, "peso": 2.0, "velocidade": 2.5,
-        "ambiente": 2.0, "experiencia": 1.0, "sociabilidade": 1.5
+    return {
+        'score_absoluto': score_total,
+        'percentual': round(indice_compatibilidade, 2),
+        'recomendado': indice_compatibilidade >= 70 # Define uma linha de corte (ex: 70%)
     }
-
-    for cao in caes_disponiveis:
-        score = 0
-        #score de altura
-        altura_ideal = definir_altura_ideal_cao(candidato.altura)
-        score_altura = PESOS["altura"] * compatibilidade_numerica(altura_ideal, cao.altura, 15)
-        score += score_altura
-        #score de peso
-        peso_ideal = definir_peso_ideal_cao(candidato.peso_candidato)
-        score_peso = PESOS["peso"] * compatibilidade_numerica(peso_ideal, cao.peso_cao, 8)
-        score += score_peso
-        #score de ambiente
-        def verificar_ambiente(cand_amb, cao_amb):
-            # Converte para string para facilitar a comparação visual
-            cand = str(cand_amb)
-            cao = str(cao_amb)
-            
-            # Se for igual, perfeito (100%)
-            if cand == cao:
-                return 1.0
-                
-            # Combinações aceitáveis (50% da nota)
-            pares_aceitaveis = [
-                ('1', '4'), # Rural e Calmo
-                ('4', '1'),
-                ('2', '3'), # Urbano e Barulhento (talvez o cão tolere)
-                ('1', '5'), # Rural e Animais
-            ]
-            
-            if (cand, cao) in pares_aceitaveis:
-                return 0.5
-                
-            # Qualquer outra coisa é 0
-            return 0.0
-        #score de ambiente
-        score += PESOS["ambiente"] * verificar_ambiente(candidato.ambiente_moradia, cao.ambiente_preferencial)
-        #score de experiencia
-        score += PESOS["experiencia"] * compatibilidade_binaria(candidato.experiencia_com_caes, 1)
-        #score de sociabilidade
-        score += PESOS["sociabilidade"] * compatibilidade_ordinal(5, cao.sociabilidade)
-
-        # Cria e Salva um por um
-        Matching.objects.create(
-            candidato=candidato,
-            cao=cao,
-            score_total=round(score, 2)
-        )
-
-
-def selecionar_pareamento(request):
-    if request.method == 'POST':
-        form = SelecaoPareamentoForm(request.POST)
-        if form.is_valid():
-            candidato = form.cleaned_data['candidato']
-            return redirect('resultado_pareamento', cpf=candidato.id_candidato)
-    else:
-        form = SelecaoPareamentoForm()
-    return render(request, 'pareamento/selecao.html', {'form': form, 'titulo': 'Iniciar Pareamento'})
-
-def resultado_pareamento(request, cpf):
-    candidato = get_object_or_404(Candidato, pk=cpf)
-    
-
-    ids_indisponiveis = list(FormacaoDupla.objects.filter(data_fim__isnull=True).values_list('cao_id', flat=True))
-    
-
-    if ids_indisponiveis:
-        caes_disponiveis = CaoGuia.objects.exclude(id_cao__in=ids_indisponiveis)
-    else:
-        # Se a lista estiver vazia, pegamos todos
-        caes_disponiveis = CaoGuia.objects.all()
-    
-    # Calcula e Salva
-    calcular_e_salvar_compatibilidade(candidato, caes_disponiveis)
-    
-    # Busca resultados
-    match_list = Matching.objects.filter(candidato=candidato).order_by('-score_total')
-    
-    return render(request, 'pareamento/resultado_pareamento.html', {
-        'candidato': candidato,
-        'match_list': match_list,
-        'titulo': f'Compatibilidade para {candidato.nome_candidato}'
-    })
-
-def confirmar_pareamento(request, cpf, id_cao):
-    candidato = get_object_or_404(Candidato, pk=cpf)
-    cao = get_object_or_404(CaoGuia, pk=id_cao)
-    
-    if request.method == 'POST':
-        FormacaoDupla.objects.create(
-            Candidato=candidato,
-            cao=cao,
-            data_inicio=date.today()
-        )
-        messages.success(request, 'Dupla formada com sucesso!')
-        return redirect('home')
-    
-    return redirect('resultado_pareamento', cpf=cpf)

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,101 +7,171 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5; /* Fundo levemente diferente */
+            background-color: #f9f9f9; /* Cor de fundo da sua Home */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-        }
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 22px;
-        }
-        /* Inputs estilizados */
-        input[type="text"], input[type="password"], input[type="email"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 20px;
             box-sizing: border-box;
-            font-size: 15px;
         }
-        label {
-            display: none; /* Oculta labels para visual mais limpo (opcional) */
-        }
-        /* Botão Azul */
-        button {
+        
+        .login-container {
+            display: flex;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             width: 100%;
-            padding: 12px;
-            background-color: #008CBA; /* Azul */
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.2s;
+            max-width: 850px;
+            height: 500px;
+            overflow: hidden;
+        }
+        
+        /* Painel Esquerdo - Ilustração */
+        .login-sidebar {
+            flex: 1.1;
+            background-color: #e8f5e9; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+        
+        .login-sidebar img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        /* Painel Direito - Formulário */
+        .login-form-container {
+            flex: 0.9;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            color: #2c3e50; /* Cor dos títulos dos cartões da sua Home */
+            font-size: 26px;
+            margin-top: 0;
+            margin-bottom: 30px;
             font-weight: 600;
+            text-align: left;
         }
-        button:hover {
-            background-color: #007bb5;
+        
+        /* Estilização dos campos gerados pelo {{ form.as_p }} */
+        .login-form-container p {
+            margin-bottom: 20px;
+            text-align: left;
         }
-        .link-voltar {
+        
+        .login-form-container label {
             display: block;
-            margin-top: 20px;
+            margin-bottom: 8px;
             color: #666;
-            text-decoration: none;
+            font-weight: 600;
             font-size: 14px;
         }
-        .link-voltar:hover {
-            text-decoration: underline;
+        
+        .login-form-container input[type="text"],
+        .login-form-container input[type="email"],
+        .login-form-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border-color 0.2s, background-color 0.2s;
+            background-color: #f9f9f9;
         }
+        
+        .login-form-container input:focus {
+            border-color: #4CAF50; /* Verde principal do projeto */
+            outline: none;
+            background-color: white;
+        }
+        
+        /* Botão estilizado com o padrão verde do projeto */
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50; /* btn-verde da sua Home */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #45a049; /* Hover do btn-verde da sua Home */
+        }
+        
+        /* Alertas de Erro */
         .alert-error {
             color: #721c24;
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 20px;
             font-size: 14px;
+            text-align: left;
+        }
+        
+        /* Responsividade para telas menores */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                height: auto;
+                max-width: 420px;
+            }
+            .login-sidebar {
+                height: 220px;
+                padding: 20px;
+            }
+            .login-form-container {
+                padding: 35px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>{{ titulo }}</h1>
+    <div class="login-container">
+        <div class="login-sidebar">
+            <img src="{% static 'cadastros/images/imglogin.png' %}" alt="Cão-Guia Ideal">
+        </div>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert-error">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+        <div class="login-form-container">
+            <h1>{{ titulo }}</h1>
 
-        {% if form.errors %}
-             <div class="alert-error">Verifique os dados informados.</div>
-        {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-error">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">
-                {% if 'Login' in titulo %} Entrar {% else %} Buscar {% endif %}
-            </button>
-        </form>
+            {% if form.errors %}
+                 <div class="alert-error">Verifique os dados informados.</div>
+            {% endif %}
 
-        <a href="{% url 'home' %}" class="link-voltar">Cancelar / Voltar</a>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">
+                    {% if 'Login' in titulo %} Entrar {% else %} Buscar {% endif %}
+                </button>
+            </form>
+        </div>
     </div>
 
 </body>
