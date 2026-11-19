@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,14 +58,12 @@
             gap: 12px;
         }
 
-        /* Estilo da nova imagem do logo */
         .brand-logo {
-            height: 55px; /* Tamanho ajustável */
+            height: 55px;
             width: auto;
             object-fit: contain;
         }
 
-        /* Estilos do Utilizador Logado e Botão Entrar */
         .user-info {
             display: flex;
             align-items: center;
@@ -161,7 +159,6 @@
 
         .card:hover { transform: translateY(-5px); }
 
-        /* Cores específicas das bordas dos cartões */
         .card-caes { border-top: 4px solid var(--color-orange); }
         .card-candidatos { border-top: 4px solid var(--color-blue); }
         .card-pareamento { border-top: 4px solid var(--color-purple); width: 450px; }
@@ -186,7 +183,7 @@
 
         /* Botões */
         .btn {
-            display: block;
+            display: flex;
             width: 100%;
             padding: 12px;
             border: none;
@@ -198,7 +195,6 @@
             margin-bottom: 10px;
             cursor: pointer;
             transition: opacity 0.2s;
-            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
@@ -211,35 +207,6 @@
         .btn-blue { background-color: var(--color-blue); }
         .btn-red { background-color: var(--color-red); }
         .btn-purple { background-color: var(--color-purple); }
-
-        /* Seção de Features (Rodapé) */
-        .features-banner {
-            background: white;
-            border-radius: 12px;
-            padding: 20px 40px;
-            display: flex;
-            gap: 40px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            margin: 20px 0 40px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-align: left;
-            max-width: 200px;
-        }
-
-        .feature-item i {
-            font-size: 1.4rem;
-            color: var(--color-green);
-        }
-
-        .feature-text h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 3px; }
-        .feature-text p { font-size: 0.75rem; color: var(--text-muted); }
 
         .link-sair {
             color: var(--text-muted);
@@ -289,14 +256,11 @@
                     <i class="fa-solid fa-dog"></i>
                 </div>
                 <h2>Cães-Guia</h2>
-                <p>Informações detalhadas.</p>
+                <p>Cadastro completo e informações detalhadas dos cães-guia.</p>
             </div>
             <div>
                 <a href="{% url 'cadastro_cao_etapa1' %}" class="btn btn-green">
-                    <i class="fa-solid fa-paw"></i> Etapa 1: Novo Cão
-                </a>
-                <a href="{% url 'verificar_id_cao_etapa2' %}" class="btn btn-orange">
-                    <i class="fa-regular fa-file-lines"></i> Etapa 2: Complementar
+                    <i class="fa-solid fa-paw"></i> Cadastrar Novo Cão
                 </a>
             </div>
         </div>
@@ -307,14 +271,11 @@
                     <i class="fa-regular fa-user"></i>
                 </div>
                 <h2>Candidatos</h2>
-                <p>Cadastros e gerenciamento de Candidatos.</p>
+                <p>Cadastro completo e gerenciamento de candidatos.</p>
             </div>
             <div>
                 <a href="{% url 'cadastro_etapa1' %}" class="btn btn-blue">
-                    <i class="fa-solid fa-user-plus"></i> Etapa 1: Novo Registo
-                </a>
-                <a href="{% url 'verificar_cpf_etapa2' %}" class="btn btn-red">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Etapa 2: Informações detalhadas
+                    <i class="fa-solid fa-user-plus"></i> Cadastrar Candidato
                 </a>
             </div>
         </div>
@@ -335,7 +296,6 @@
             </a>
         </div>
     </section>
-
 
     <a href="{% url 'login' %}" class="link-sair">Sair / Voltar ao Login</a>
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UsuarioForm,CandidatoEtapa1Form, CandidatoEtapa2Form, CaoGuiaEtapa1Form, CaoGuiaEtapa2Form, BuscaCaoForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm, BuscaCPFForm
+from .forms import CaoGuiaForm, UsuarioForm,CandidatoForm, CandidatoEtapa2Form, CaoGuiaEtapa1Form, CaoGuiaEtapa2Form, BuscaCaoForm, FormacaoDuplaForm, LoginForm, CustomUserCreationForm, BuscaCPFForm
 from .forms import LoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -9,15 +9,14 @@ from django.contrib import messages
 
 def cadastro_etapa1(request):
     if request.method == 'POST':
-        form = CandidatoEtapa1Form(request.POST)
+        form = CandidatoForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Etapa 1 concluída! Você pode continuar agora ou depois.')
-            return redirect('home') # Volta para home para o usuário escolher o que fazer
+            messages.success(request, 'Candidato cadastrado com sucesso!')
+            return redirect('home')
     else:
-        form = CandidatoEtapa1Form()
-    
-    return render(request, 'cadastros/cadastro_etapa1.html', {'form': form, 'titulo': 'Etapa 1: Dados Pessoais'})
+        form = CandidatoForm()
+    return render(request, 'cadastros/cadastro_etapa1.html', {'form': form, 'titulo': 'Cadastro Completo de Candidato'})
 
 # --- Nova View: Verifica CPF antes da Etapa 2 ---
 def verificar_cpf_etapa2(request):
@@ -91,14 +90,14 @@ def cadastrar_usuario(request):
 
 def cadastro_cao_etapa1(request):
     if request.method == 'POST':
-        form = CaoGuiaEtapa1Form(request.POST)
+        form = CaoGuiaForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Cão cadastrado com sucesso (Etapa 1)!')
+            messages.success(request, 'Cão-Guia cadastrado com sucesso!')
             return redirect('home')
     else:
-        form = CaoGuiaEtapa1Form()
-    return render(request, 'cadastros/cadastro_cao_etapa1.html', {'form': form, 'titulo': 'Cadastrar Cão: Dados Básicos'})
+        form = CaoGuiaForm()
+    return render(request, 'cadastros/cadastro_cao_etapa1.html', {'form': form, 'titulo': 'Cadastro Completo do Cão-Guia'})
 
 def verificar_id_cao_etapa2(request):
     if request.method == 'POST':

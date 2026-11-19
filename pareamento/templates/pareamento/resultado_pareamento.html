@@ -2,18 +2,18 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>{{ titulo }}</title>
+    <title>{{ titulo|default:"Resultado do Pareamento" }}</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 40px; }
         .container { max-width: 900px; margin: 0 auto; }
         .match-card { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
-        /* Cores baseadas no score */
-        .high-match { border-left-color: #4CAF50; } /* Verde */
-        .med-match { border-left-color: #FF9800; }  /* Laranja */
-        .low-match { border-left-color: #f44336; }  /* Vermelho */
+        /* Cores baseadas no índice de compatibilidade (%) */
+        .high-match { border-left-color: #4CAF50; } /* Verde (>= 70%) */
+        .med-match { border-left-color: #FF9800; }  /* Laranja (50% a 69.9%) */
+        .low-match { border-left-color: #f44336; }  /* Vermelho (< 50%) */
 
-        .score-badge { font-size: 1.2rem; font-weight: bold; color: #333; }
+        .score-badge { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 8px; }
         .btn-confirmar { background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; }
     </style>
 </head>
@@ -26,19 +26,20 @@
         <h3>Cães Compatíveis (Ordenados por Score):</h3>
 
         {% for item in match_list %}
-            <div class="match-card {% if item.score_total >= 8 %}high-match{% elif item.score_total >= 5 %}med-match{% else %}low-match{% endif %}">
+            <div class="match-card {% if item.score_total >= 70 %}high-match{% elif item.score_total >= 50 %}med-match{% else %}low-match{% endif %}">
                 <div>
                     <h3 style="margin: 0;">{{ item.cao.nome_cao }} ({{ item.cao.raca }})</h3>
                     <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">
-                        Vel: {{ item.cao.get_velocidade_caminhada_display }} | 
-                        Ambiente: {{ item.cao.get_ambiente_preferencial_display }}
+                        Velocidade: {{ item.cao.velocidade|default:"Não informada" }} | 
+                        Temperamento: {{ item.cao.temperamento|default:"Não informado" }} | 
+                        Energia: {{ item.cao.nivel_energia|default:"Não informada" }}
                     </p>
                 </div>
                 
                 <div style="text-align: right;">
-                    <div class="score-badge">Score: {{ item.score_total }}</div>
+                    <div class="score-badge">Compatibilidade: {{ item.score_total }}%</div>
                     
-                    <form method="post" action="{% url 'confirmar_pareamento' candidato.id_candidato item.cao.id_cao %}">
+                    <form method="post" action="{% url 'confirmar_pareamento' candidato.id_candidato item.cao.pk %}">
                         {% csrf_token %}
                         <button type="submit" class="btn-confirmar" onclick="return confirm('Confirmar dupla?');">
                             Formar Dupla
